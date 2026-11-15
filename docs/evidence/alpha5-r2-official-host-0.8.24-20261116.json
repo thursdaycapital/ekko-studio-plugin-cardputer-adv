@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "checkedAtUtc": "2026-11-15T17:22:20.667362+00:00",
+  "pluginVersion": "0.2.0-alpha.5",
+  "firmwareVersion": "cardputer-adv-v10.0.0-alpha.5",
+  "scope": "Final R2 optional-plugin SDK compatibility and public download verification; no M5 hardware acceptance",
+  "host": {
+    "version": "0.8.24",
+    "kind": "Isolated unmodified official Studio",
+    "serverEntrySha256": "c04bfec6333a0e70d763ba93ec2fff7bf3f7b6241b6b75c4d5c1d57a571084e0"
+  },
+  "testedFileSha256": {
+    "plugin.json": "ed75fa1cdb1ba2a24bb119061c03ee4900857028deaeb27540d77cfe615b497c",
+    "server.mjs": "aadf8c5389fee15b4096c6159b34b1aac5e5eb4071a88f318f6834c4ab864472",
+    "client.mjs": "7a05111f044f8c764065be7a5e00bd854ab428d0dc94d0c9e5cd087f350fbec2",
+    "lib/backend.mjs": "b5bd3110d0479cafaec90344ddcc5ffe3c2ade32378deea3fd4fe6ec3c1b6f57",
+    "contracts/plugin.json": "7c8a35cd5be2f02b9e9e4a33cdc4dd456a7fe2280bfd4b0aef5f79240dcf3b48",
+    "firmware/release.json": "6ef8894c27c4b0ab6736ea14243e60bbba51921362c35a573a756e2a495caad2",
+    "firmware/ekko-stock-lan-update-0x10000.bin": "96e29f0aca8160e902f7cc56d8cac4446b435987b64fe0a800bc11f741d002c0",
+    "firmware/source.tar.gz": "a495bef8c1fa6394009610eb965dd9ba2f479b165ace238e3cfc2821bce7dfae"
+  },
+  "localChecks": {
+    "harnessPassed": true,
+    "unitTestsPassed": 30,
+    "unitTestsSkipped": 0,
+    "chromeSandboxTestsPassed": 5,
+    "chromeSandboxTestsSkipped": 0
+  },
+  "hostChecks": {
+    "officialLocalInstall": true,
+    "initiallyDisabled": true,
+    "enabledRuntimeActive": true,
+    "permissions": [
+      "ui",
+      "api.read"
+    ],
+    "rpcPassed": [
+      "get-overview",
+      "get-settings",
+      "list-devices"
+    ],
+    "overviewMatchesRelease": true,
+    "binaryAndSourceArchiveVerified": true,
+    "realDeviceCount": 0,
+    "browser": "Independent ephemeral Google Chrome context, real official hash router and SDK iframe bridge",
+    "views": [
+      {
+        "view": "devices",
+        "rendered": true,
+        "noPluginAlert": true,
+        "opaqueAllowScriptsSandbox": true
+      },
+      {
+        "view": "firmware",
+        "rendered": true,
+        "noPluginAlert": true,
+        "opaqueAllowScriptsSandbox": true
+      },
+      {
+        "view": "guide",
+        "rendered": true,
+        "noPluginAlert": true,
+        "opaqueAllowScriptsSandbox": true
+      },
+      {
+        "view": "preferences",
+        "rendered": true,
+        "noPluginAlert": true,
+        "opaqueAllowScriptsSandbox": true
+      }
+    ],
+    "browserPageErrors": 0,
+    "nativeUninstallRestoredPluginMetadata": true,
+    "remainingPluginCount": 0
+  },
+  "publicDownloads": [
+    {
+      "url": "https://github.com/thursdaycapital/ekko-cardputer-adv-stock-lan/releases/download/v10.0.0-alpha.5/cardputer-adv-v10.0.0-alpha.5-update-0x10000.bin",
+      "bytes": 3321056,
+      "sha256": "96e29f0aca8160e902f7cc56d8cac4446b435987b64fe0a800bc11f741d002c0",
+      "httpStatus": 200,
+      "downloadMatchesBundledFile": true
+    },
+    {
+      "url": "https://github.com/thursdaycapital/ekko-cardputer-adv-stock-lan/releases/download/v10.0.0-alpha.5/cardputer-adv-source-v10.0.0-alpha.5-r2.tar.gz",
+      "bytes": 10157492,
+      "sha256": "a495bef8c1fa6394009610eb965dd9ba2f479b165ace238e3cfc2821bce7dfae",
+      "httpStatus": 200,
+      "downloadMatchesBundledFile": true
+    }
+  ],
+  "sourceCommit": "d087ae02d5c13ae0ac711a09415cfe8aa31ddcc4",
+  "firmwarePhysicalValidated": false,
+  "limitations": [
+    "The real device list in the isolated host was empty. Populated device output is covered by separate fixtures.",
+    "No M5 operation, serial access or flash was performed. Physical validation remains pending.",
+    "Plugin preferences were read but not changed; caller isolation/cancellation are covered by separate tests.",
+    "Independent plugin repository creation and public installation are still pending.",
+    "Historical 0.1.1 and original pre-R2 evidence remains unchanged and does not stand in for this final bundle."
+  ]
+}

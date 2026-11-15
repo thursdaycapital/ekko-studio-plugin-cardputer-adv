@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "checkedAtUtc": "2026-11-15T17:14:30.365499+00:00",
+  "pluginVersion": "0.2.0-alpha.5",
+  "hostVersion": "0.8.24",
+  "scope": "Actual isolated unmodified official host and original alpha5 archive; source r2 not yet bundled",
+  "hostServerEntrySha256": "c04bfec6333a0e70d763ba93ec2fff7bf3f7b6241b6b75c4d5c1d57a571084e0",
+  "testedFileSha256": {
+    "plugin.json": "ed75fa1cdb1ba2a24bb119061c03ee4900857028deaeb27540d77cfe615b497c",
+    "server.mjs": "aadf8c5389fee15b4096c6159b34b1aac5e5eb4071a88f318f6834c4ab864472",
+    "client.mjs": "7a05111f044f8c764065be7a5e00bd854ab428d0dc94d0c9e5cd087f350fbec2",
+    "lib/backend.mjs": "3f91d9de8a6341ff07127b4f03d3cce27760f2811cdb02c09f525ea69790b922",
+    "contracts/plugin.json": "7bfc775ae66fe3ff504aeafdabafd4fb9b328c18b4bcf0f9f76b2d6da078a314",
+    "firmware/release.json": "cb3589f0012ac39c56c90c19c4ee6c404c48369f9ffc5c14d825ed0bd1e20c03",
+    "firmware/source.tar.gz": "23a8756227552906965be0aded09a7c14528f6455279357422eede93d3c2e258"
+  },
+  "checks": {
+    "officialLocalInstall": true,
+    "initiallyDisabled": true,
+    "enabledRuntimeActive": true,
+    "rpcPassed": [
+      "get-overview",
+      "get-settings",
+      "list-devices"
+    ],
+    "artifactVerified": true,
+    "overviewMatchesActualRelease": true,
+    "deviceCount": 0,
+    "browser": "Independent ephemeral headless Google Chrome context; official hash router and real SDK iframe bridge",
+    "renderedViews": [
+      {
+        "view": "devices",
+        "rendered": true,
+        "noPluginAlert": true,
+        "opaqueAllowScriptsSandbox": true
+      },
+      {
+        "view": "firmware",
+        "rendered": true,
+        "noPluginAlert": true,
+        "opaqueAllowScriptsSandbox": true
+      },
+      {
+        "view": "guide",
+        "rendered": true,
+        "noPluginAlert": true,
+        "opaqueAllowScriptsSandbox": true
+      },
+      {
+        "view": "preferences",
+        "rendered": true,
+        "noPluginAlert": true,
+        "opaqueAllowScriptsSandbox": true
+      }
+    ],
+    "browserPageErrors": 0,
+    "nativeUninstallRestoredBaseline": true,
+    "remainingPluginCount": 0
+  },
+  "publicDownloads": [
+    {
+      "url": "https://github.com/thursdaycapital/ekko-cardputer-adv-stock-lan/releases/download/v10.0.0-alpha.5/cardputer-adv-v10.0.0-alpha.5-update-0x10000.bin",
+      "bytes": 3321056,
+      "sha256": "96e29f0aca8160e902f7cc56d8cac4446b435987b64fe0a800bc11f741d002c0",
+      "httpStatus": 200,
+      "matchesBundledFile": true
+    },
+    {
+      "url": "https://github.com/thursdaycapital/ekko-cardputer-adv-stock-lan/releases/download/v10.0.0-alpha.5/cardputer-adv-source-v10.0.0-alpha.5.tar.gz",
+      "bytes": 10158588,
+      "sha256": "23a8756227552906965be0aded09a7c14528f6455279357422eede93d3c2e258",
+      "httpStatus": 200,
+      "matchesBundledFile": true
+    }
+  ],
+  "limitations": [
+    "Source archive r2 and new source commit were not yet supplied; this evidence only applies to the exact hashes recorded above.",
+    "The real isolated device API returned an empty list; populated data remains covered by separate fixture tests.",
+    "An initial direct browser path missed the official hash router. Correct /#/ routes rendered all four actual views; no product change was needed.",
+    "No M5 operation or flash was performed. Current firmware physical-validation flags remain false.",
+    "Independent plugin repository has not been published by this test."
+  ]
+}

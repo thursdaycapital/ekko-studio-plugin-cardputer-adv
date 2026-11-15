@@ -1,0 +1,54 @@
+{
+  "name": "studio-plugin-m5stack-cardputer-adv",
+  "version": "0.2.0-alpha.5",
+  "type": "module",
+  "private": true,
+  "description": "Ekko Studio SDK v1 plugin and firmware update preview for M5Stack Cardputer-Adv",
+  "license": "BSL-1.1",
+  "author": "thursdaycapital",
+  "engines": {
+    "node": ">=24"
+  },
+  "files": [
+    "plugin.json",
+    "plugin.harness.json",
+    "server.mjs",
+    "client.mjs",
+    "lib/",
+    "contracts/",
+    "sdk/",
+    "scripts/",
+    "tests/",
+    "docs/",
+    ".github/",
+    "AGENTS.md",
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "CHANGELOG.md",
+    "firmware/*.bin",
+    "firmware/*.json",
+    "firmware/*.md",
+    "firmware/*.txt",
+    "firmware/*.tar.gz"
+  ],
+  "scripts": {
+    "dev": "ekko-studio plugins dev .",
+    "harness:check": "node scripts/plugin-harness.mjs check",
+    "test": "node --test tests/contracts.test.mjs tests/backend.test.mjs tests/client.test.mjs",
+    "test:browser": "node --test tests/browser.test.mjs",
+    "test:host": "node --test tests/host-runtime.test.mjs",
+    "prepack": "npm run harness:check && npm test && npm run build --if-present && npm run harness:check"
+  },
+  "devDependencies": {
+    "@ekko-studio/plugin-sdk": "file:./sdk"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv.git"
+  },
+  "homepage": "https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv#readme",
+  "bugs": {
+    "url": "https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv/issues"
+  }
+}

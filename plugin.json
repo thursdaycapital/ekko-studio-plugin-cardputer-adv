@@ -1,0 +1,73 @@
+{
+  "id": "m5stack-cardputer-adv",
+  "name": "M5Stack Cardputer-Adv",
+  "description": "M5Stack Cardputer-Adv 的局域网设备管理、固件校验与绑定指南。沿用 Studio 原生聊天和设备管理，不安装电脑补丁；附已有双固件布局的应用更新预览版。",
+  "author": {
+    "name": "thursdaycapital",
+    "url": "https://github.com/thursdaycapital"
+  },
+  "license": "BSL-1.1",
+  "keywords": [
+    "hardware",
+    "m5stack",
+    "cardputer-adv",
+    "esp32-s3",
+    "lan",
+    "firmware"
+  ],
+  "version": "0.2.0-alpha.5",
+  "apiVersion": 1,
+  "server": "server.mjs",
+  "client": "client.mjs",
+  "permissions": [
+    "ui",
+    "api.read"
+  ],
+  "views": [
+    {
+      "id": "devices",
+      "title": "设备",
+      "slot": "workspace",
+      "icon": "mcp",
+      "order": 0
+    },
+    {
+      "id": "firmware",
+      "title": "固件",
+      "slot": "workspace",
+      "icon": "terminal",
+      "order": 1
+    },
+    {
+      "id": "guide",
+      "title": "使用指南",
+      "slot": "workspace",
+      "icon": "book",
+      "order": 2
+    },
+    {
+      "id": "preferences",
+      "title": "Cardputer-Adv",
+      "slot": "settings"
+    }
+  ],
+  "navigation": {
+    "main": [
+      {
+        "viewId": "devices",
+        "icon": "mcp",
+        "title": "Cardputer-Adv"
+      }
+    ],
+    "settings": [
+      {
+        "viewId": "preferences",
+        "icon": "settings"
+      }
+    ]
+  },
+  "repository": "https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv",
+  "documentation": "https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv/blob/main/docs/QUICKSTART.zh-CN.md",
+  "issues": "https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv/issues",
+  "changelog": "https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv/blob/main/CHANGELOG.md"
+}

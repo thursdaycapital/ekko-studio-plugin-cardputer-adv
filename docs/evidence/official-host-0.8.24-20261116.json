@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "checkedAtUtc": "2026-11-15T16:23:56Z",
+  "checkedDateAsiaShanghai": "2026-11-16",
+  "scope": "Optional plugin SDK host compatibility; not firmware hardware acceptance",
+  "host": {
+    "version": "0.8.24",
+    "environment": "Isolated official unmodified Studio instance",
+    "serverEntrySha256": "c04bfec6333a0e70d763ba93ec2fff7bf3f7b6241b6b75c4d5c1d57a571084e0",
+    "dailyStudioModified": false
+  },
+  "plugin": {
+    "id": "m5stack-cardputer-adv",
+    "version": "0.1.1",
+    "permissions": ["ui", "api.read"],
+    "viewCount": 4,
+    "fileSha256": {
+      "plugin.json": "afab082c4deee7082a04445808e51267aadb6564b4a517ba2f6f65ff92c8f243",
+      "server.mjs": "aadf8c5389fee15b4096c6159b34b1aac5e5eb4071a88f318f6834c4ab864472",
+      "client.mjs": "7a05111f044f8c764065be7a5e00bd854ab428d0dc94d0c9e5cd087f350fbec2",
+      "lib/backend.mjs": "53a166150b11214fc2602c3f5e814c362ce0588900274b4a4e218ab4bcc4da46",
+      "contracts/plugin.json": "3277cc99aa2b100b0e7bb1335d77eb7cccdffcd92428d3b17fad6ccabaa03de1"
+    }
+  },
+  "checks": {
+    "officialInstallerAcceptedLocalDirectory": true,
+    "initiallyDisabled": true,
+    "enabledRuntimeActive": true,
+    "declaredPermissionsExact": true,
+    "declaredViewsExact": true,
+    "getOverviewArtifactVerified": true,
+    "getOverviewMatchesBundledReleaseMetadata": true,
+    "getSettingsDefault": true,
+    "listDevicesOfficialReadApiSucceeded": true,
+    "listDevicesOnlyAllowedOutputFields": true,
+    "listDevicesReturnedCount": 0,
+    "clientAsyncMountModuleRetrieved": true,
+    "officialUninstallCompleted": true,
+    "remainingPluginMetadataMatchesInitialBaseline": true,
+    "remainingPluginCount": 0
+  },
+  "bundle": {
+    "version": "cardputer-adv-v9.0.0-dev.10-ram-lan",
+    "applicationBytes": 3284000,
+    "applicationSha256": "e753a1b04f22b249c962ad9fb304a5f193a6cd067bf41deedf6654eb0d8b2fb5",
+    "releaseMetadataSha256": "fb7183034d147b2477febabde1d0a9de5ecb3595957d5ef94c031fb1d51e44da",
+    "sourceArchiveSha256": "a56af45390ed921a29c66feae3745c67603965904d3c69d0aed5f8295f06eb1c"
+  },
+  "limitations": [
+    "This test loaded the real installed official plugin runtime and invoked its RPC endpoints. It did not render all four views in the host browser.",
+    "The real device API returned no devices in the isolated host; populated device output remains covered by separate synthetic fixture tests.",
+    "No plugin preference was changed. Caller isolation and cancellation remain covered by separate host-runtime fixture tests.",
+    "No model request, serial access, flash operation or M5 interaction was performed in this test.",
+    "The bundled application remains dev10. No result here validates a v10 image or the M5 hardware against Studio 0.8.24.",
+    "An initial test assertion expected a synchronous mount declaration. It was corrected to accept the actual exported async mount; native uninstall restored the baseline after both attempts."
+  ]
+}

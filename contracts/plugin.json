@@ -1,0 +1,1253 @@
+{
+  "schemaVersion": 1,
+  "description": "Cardputer-Adv 官方 SDK 设备摘要、非敏感偏好及只读固件交付契约。",
+  "models": {
+    "empty": {
+      "type": "null",
+      "description": "无参数；必须显式传 null。"
+    },
+    "settings": {
+      "type": "object",
+      "description": "当前调用用户及 Profile 的非敏感设备偏好；不保存密码、令牌或设备完整代码。",
+      "properties": {
+        "deviceOrigin": {
+          "type": "string",
+          "description": "设备管理页根 origin；空值表示未指定，仅允许私有 IPv4 或 .local 的 HTTP(S) 地址。",
+          "maxLength": 256
+        },
+        "preferredDeviceId": {
+          "type": "string",
+          "description": "偏好的 Studio 设备记录 ID；空值表示未选择，不用于推断设备型号。",
+          "maxLength": 128
+        }
+      },
+      "required": [
+        "deviceOrigin",
+        "preferredDeviceId"
+      ],
+      "additionalProperties": false
+    },
+    "saved": {
+      "type": "object",
+      "description": "设置写入完成的确认。",
+      "properties": {
+        "ok": {
+          "type": "boolean",
+          "description": "仅成功写入后返回 true。",
+          "enum": [
+            true
+          ]
+        }
+      },
+      "required": [
+        "ok"
+      ],
+      "additionalProperties": false
+    },
+    "nativeDevices": {
+      "type": "object",
+      "description": "官方 MCU API 响应；已知字段必须精确匹配，未知字段只允许读取后丢弃。",
+      "properties": {
+        "devices": {
+          "type": "array",
+          "description": "官方全局设备登记列表，不是本插件专属设备。",
+          "items": {
+            "type": "object",
+            "description": "官方 MCU 设备记录。",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "description": "正整数记录 ID。",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "name": {
+                "type": "string",
+                "description": "登记名称，不用于识别真实型号。",
+                "maxLength": 1000
+              },
+              "device_code": {
+                "type": "string",
+                "description": "完整设备码；只在本次调用内裁剪，禁止返回或存储。",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "is_official": {
+                "type": "boolean",
+                "description": "官方服务器所记渠道标记，不在插件中修改。"
+              },
+              "created_at": {
+                "type": "integer",
+                "description": "官方记录创建时间。",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "lan_connected": {
+                "type": "boolean",
+                "description": "Studio 当前是否有设备局域网连接。"
+              },
+              "remote_connected": {
+                "type": "boolean",
+                "description": "电脑端中继客户端连接状态，不证明设备端远程聊天可用。"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "device_code",
+              "is_official",
+              "created_at",
+              "lan_connected",
+              "remote_connected"
+            ],
+            "additionalProperties": true
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "devices"
+      ],
+      "additionalProperties": true
+    },
+    "devices": {
+      "type": "object",
+      "description": "安全裁剪的官方登记列表；没有硬件探测。",
+      "properties": {
+        "devices": {
+          "type": "array",
+          "description": "不按名称过滤；由用户判断哪条记录对应其设备。",
+          "items": {
+            "type": "object",
+            "description": "允许向前端公开的设备摘要。",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "官方整数记录 ID 的十进制字符串。",
+                "minLength": 1,
+                "maxLength": 16
+              },
+              "name": {
+                "type": "string",
+                "description": "官方登记名称。",
+                "maxLength": 1000
+              },
+              "codeSuffix": {
+                "type": "string",
+                "description": "设备码最多末六字符，不能用于登录。",
+                "maxLength": 6
+              },
+              "lanConnected": {
+                "type": "boolean",
+                "description": "官方局域网连接状态。"
+              },
+              "desktopRelayConnected": {
+                "type": "boolean",
+                "description": "电脑中继连接状态，非 M5 远程验收。"
+              },
+              "official": {
+                "type": "boolean",
+                "description": "原样保留官方渠道标记。"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "codeSuffix",
+              "lanConnected",
+              "desktopRelayConnected",
+              "official"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 1000
+        },
+        "modelVerified": {
+          "type": "boolean",
+          "description": "没有探测硬件，所以始终为 false。",
+          "enum": [
+            false
+          ]
+        }
+      },
+      "required": [
+        "devices",
+        "modelVerified"
+      ],
+      "additionalProperties": false
+    },
+    "release": {
+      "type": "object",
+      "description": "本地只读发布清单；所有字段拒绝未知属性。",
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "description": "发布清单格式版本。",
+          "enum": [
+            1
+          ]
+        },
+        "board": {
+          "type": "object",
+          "description": "此固件明确针对的开发板；不代表自动识别了已登记设备的硬件。",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "开发板完整名称。",
+              "enum": [
+                "M5Stack Cardputer-Adv"
+              ]
+            },
+            "chip": {
+              "type": "string",
+              "description": "ESP32 镜像目标芯片。",
+              "enum": [
+                "esp32s3"
+              ]
+            },
+            "flashBytes": {
+              "type": "integer",
+              "description": "板载 Flash 容量，字节。",
+              "enum": [
+                8388608
+              ]
+            },
+            "psram": {
+              "type": "boolean",
+              "description": "此目标没有 PSRAM。",
+              "enum": [
+                false
+              ]
+            },
+            "display": {
+              "type": "object",
+              "description": "板载屏幕分辨率，像素。",
+              "properties": {
+                "width": {
+                  "type": "integer",
+                  "description": "横向像素。",
+                  "enum": [
+                    240
+                  ]
+                },
+                "height": {
+                  "type": "integer",
+                  "description": "纵向像素。",
+                  "enum": [
+                    135
+                  ]
+                }
+              },
+              "required": [
+                "width",
+                "height"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "chip",
+            "flashBytes",
+            "psram",
+            "display"
+          ],
+          "additionalProperties": false
+        },
+        "capabilities": {
+          "type": "object",
+          "description": "这个固件候选的功能范围；Agent 数量不是逐个实机验收声明。",
+          "properties": {
+            "transport": {
+              "type": "string",
+              "description": "首版仅使用官方局域网标准接口。",
+              "enum": [
+                "lan-standard"
+              ]
+            },
+            "agentCatalogCount": {
+              "type": "integer",
+              "description": "内置 Agent 目录项数。",
+              "enum": [
+                16
+              ]
+            },
+            "studioPatchRequired": {
+              "type": "boolean",
+              "description": "无需修改 Studio 核心或新增电脑桥接。",
+              "enum": [
+                false
+              ]
+            },
+            "remoteSupported": {
+              "type": "boolean",
+              "description": "此交付不承诺跨网远程功能。",
+              "enum": [
+                false
+              ]
+            },
+            "studioOtaSupported": {
+              "type": "boolean",
+              "description": "此插件不提供 Studio OTA 或刷写。",
+              "enum": [
+                false
+              ]
+            },
+            "sdRequiredForChatVoice": {
+              "type": "boolean",
+              "description": "聊天语音使用压缩 RAM 暂存，无需 SD 卡。",
+              "enum": [
+                false
+              ]
+            },
+            "maximumRecordingSeconds": {
+              "type": "integer",
+              "description": "单次聊天录音上限，秒。",
+              "enum": [
+                5
+              ]
+            },
+            "chineseInput": {
+              "type": "boolean",
+              "description": "包含中文输入交互。",
+              "enum": [
+                true
+              ]
+            },
+            "chatHistory": {
+              "type": "boolean",
+              "description": "包含聊天记录交互。",
+              "enum": [
+                true
+              ]
+            },
+            "explicitAgentModes": {
+              "type": "boolean",
+              "description": "可选：捆绑固件明确支持首页选择 Studio模型／原生CLI 时为 true。省略等同 false，不根据版本号猜测。"
+            },
+            "shortG0Returns": {
+              "type": "boolean",
+              "description": "可选：捆绑固件明确支持短按 G0 返回时为 true。省略等同 false；不改变旧固件的按键说明。"
+            }
+          },
+          "required": [
+            "transport",
+            "agentCatalogCount",
+            "studioPatchRequired",
+            "remoteSupported",
+            "studioOtaSupported",
+            "sdRequiredForChatVoice",
+            "maximumRecordingSeconds",
+            "chineseInput",
+            "chatHistory"
+          ],
+          "additionalProperties": false
+        },
+        "firmware": {
+          "type": "object",
+          "description": "应用分区更新包；不是空白设备整机安装包。",
+          "properties": {
+            "version": {
+              "type": "string",
+              "description": "固件自身完整版本标识。",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "releaseLabel": {
+              "type": "string",
+              "description": "公开预发布标签。",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "stage": {
+              "type": "string",
+              "description": "保留真实预发布状态，不称稳定版。",
+              "enum": [
+                "development-preview"
+              ]
+            },
+            "applicationOffset": {
+              "type": "integer",
+              "description": "Ekko 应用偏移 0x10000。",
+              "enum": [
+                65536
+              ]
+            },
+            "applicationPartitionBytes": {
+              "type": "integer",
+              "description": "现有应用分区 0x330000 字节。",
+              "enum": [
+                3342336
+              ]
+            },
+            "factoryOffset": {
+              "type": "integer",
+              "description": "必须保留的原厂应用起始偏移 0x340000。",
+              "enum": [
+                3407872
+              ]
+            },
+            "requiresExistingLayout": {
+              "type": "boolean",
+              "description": "刷写前必须核对现有布局。",
+              "enum": [
+                true
+              ]
+            },
+            "blankDeviceSupported": {
+              "type": "boolean",
+              "description": "不支持把这个应用包直接刷入空白原厂设备。",
+              "enum": [
+                false
+              ]
+            },
+            "partitionTable": {
+              "type": "object",
+              "description": "已有兼容分区表的校验基准；插件不读取设备 Flash。",
+              "properties": {
+                "offset": {
+                  "type": "integer",
+                  "description": "已有分区表偏移。",
+                  "enum": [
+                    32768
+                  ]
+                },
+                "bytes": {
+                  "type": "integer",
+                  "description": "分区表参与校验的长度。",
+                  "enum": [
+                    3072
+                  ]
+                },
+                "sha256": {
+                  "type": "string",
+                  "description": "已有分区表 SHA-256，小写十六进制。",
+                  "minLength": 64,
+                  "maxLength": 64
+                }
+              },
+              "required": [
+                "offset",
+                "bytes",
+                "sha256"
+              ],
+              "additionalProperties": false
+            },
+            "files": {
+              "type": "array",
+              "description": "已打包的应用镜像；下载使用同仓库、精确标签及资产名，或旧版的固定完整提交。",
+              "items": {
+                "type": "object",
+                "description": "一个应用分区镜像。",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "description": "相对插件根目录的 firmware/ 内文件路径。",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "bytes": {
+                    "type": "integer",
+                    "description": "本地镜像精确字节数。",
+                    "minimum": 24,
+                    "maximum": 3342336
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "description": "镜像 SHA-256，小写十六进制。",
+                    "minLength": 64,
+                    "maxLength": 64
+                  },
+                  "offset": {
+                    "type": "integer",
+                    "description": "应用刷写偏移。",
+                    "enum": [
+                      65536
+                    ]
+                  },
+                  "downloadUrl": {
+                    "type": "string",
+                    "description": "固定完整 40 位提交的公开 GitHub raw HTTPS 下载地址。",
+                    "minLength": 1,
+                    "maxLength": 2048
+                  },
+                  "downloadAsset": {
+                    "type": "string",
+                    "description": "可选：GitHub Release 中的精确应用资产 basename；填写时下载地址必须与来源仓库、releaseLabel 及此字段完全对应，不允许斜杠、查询或编码转义。省略时仅接受同仓库、固定完整源码提交的旧 raw 下载地址。",
+                    "minLength": 5,
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "path",
+                  "bytes",
+                  "sha256",
+                  "offset",
+                  "downloadUrl"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 1
+            },
+            "source": {
+              "type": "object",
+              "description": "公开来源链接；不返回本机路径。",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "description": "公开 GitHub 来源仓库。",
+                  "minLength": 1,
+                  "maxLength": 2048
+                },
+                "commit": {
+                  "type": "string",
+                  "description": "固件来源的完整 Git 提交。",
+                  "minLength": 40,
+                  "maxLength": 40
+                },
+                "url": {
+                  "type": "string",
+                  "description": "固定源码提交的 GitHub 浏览地址。",
+                  "minLength": 1,
+                  "maxLength": 2048
+                },
+                "releaseUrl": {
+                  "type": "string",
+                  "description": "公开预发布说明页。",
+                  "minLength": 1,
+                  "maxLength": 2048
+                },
+                "relinkUrl": {
+                  "type": "string",
+                  "description": "固定提交的首次绑定及重新连接说明。",
+                  "minLength": 1,
+                  "maxLength": 2048
+                },
+                "archive": {
+                  "type": "object",
+                  "description": "可选的完整对应源码归档；省略保持旧清单兼容。填写时校验本地普通文件大小、SHA及同仓库同标签精确下载资产，不从网络加载源码。",
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "description": "相对插件根目录的 firmware/ 内 .tar.gz 路径；不允许逃逸、链接或特殊文件。",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "bytes": {
+                      "type": "integer",
+                      "description": "源码归档实际字节数。",
+                      "minimum": 1,
+                      "maximum": 33554432
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "description": "本地完整对应源码归档 SHA-256，小写十六进制。",
+                      "minLength": 64,
+                      "maxLength": 64
+                    },
+                    "downloadAsset": {
+                      "type": "string",
+                      "description": "同仓库同 releaseLabel 的精确源码 .tar.gz 资产 basename，不接受斜杠、查询或编码转义。",
+                      "minLength": 8,
+                      "maxLength": 256
+                    },
+                    "downloadUrl": {
+                      "type": "string",
+                      "description": "同仓库、同发布标签、同 downloadAsset 的 GitHub Release 下载 URL。",
+                      "minLength": 1,
+                      "maxLength": 2048
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "bytes",
+                    "sha256",
+                    "downloadAsset",
+                    "downloadUrl"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "repository",
+                "commit",
+                "url",
+                "releaseUrl",
+                "relinkUrl"
+              ],
+              "additionalProperties": false
+            },
+            "validation": {
+              "type": "object",
+              "description": "历史验收的精确边界；不把编译、主机测试或旧版本验收冒充当前实机验收。",
+              "properties": {
+                "textStudioVersions": {
+                  "type": "array",
+                  "description": "已获得文字回复用户确认的 Studio 版本。",
+                  "items": {
+                    "type": "string",
+                    "description": "版本号。",
+                    "maxLength": 32
+                  },
+                  "maxItems": 32
+                },
+                "voiceStudioVersions": {
+                  "type": "array",
+                  "description": "已获得识别、回复及实际声音用户确认的 Studio 版本。",
+                  "items": {
+                    "type": "string",
+                    "description": "版本号。",
+                    "maxLength": 32
+                  },
+                  "maxItems": 32
+                },
+                "fiveSecondAutoStopUserConfirmed": {
+                  "type": "boolean",
+                  "description": "用户确认超过上限后可自动停止。"
+                },
+                "fullFiveSecondByteCountObserved": {
+                  "type": "boolean",
+                  "description": "是否实际抓到完整五秒采集字节数。"
+                },
+                "allAgentsPhysicallyValidated": {
+                  "type": "boolean",
+                  "description": "是否已逐个实机验收全部 16 Agent。"
+                },
+                "fullMatrixComplete": {
+                  "type": "boolean",
+                  "description": "原计划全部故障及恢复矩阵是否完成。"
+                }
+              },
+              "required": [
+                "textStudioVersions",
+                "voiceStudioVersions",
+                "fiveSecondAutoStopUserConfirmed",
+                "fullFiveSecondByteCountObserved",
+                "allAgentsPhysicallyValidated",
+                "fullMatrixComplete"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "releaseLabel",
+            "stage",
+            "applicationOffset",
+            "applicationPartitionBytes",
+            "factoryOffset",
+            "requiresExistingLayout",
+            "blankDeviceSupported",
+            "partitionTable",
+            "files",
+            "source",
+            "validation"
+          ],
+          "additionalProperties": false
+        },
+        "pluginSdk": {
+          "type": "object",
+          "description": "插件 SDK 与当前宿主的检查边界，与旧固件实机范围分开。",
+          "properties": {
+            "apiVersion": {
+              "type": "integer",
+              "description": "官方插件 API 版本。",
+              "enum": [
+                1
+              ]
+            },
+            "sourceCommit": {
+              "type": "string",
+              "description": "生成本插件使用的官方 SDK 完整提交。",
+              "minLength": 40,
+              "maxLength": 40
+            },
+            "hostVersion": {
+              "type": "string",
+              "description": "本次插件兼容性检查宿主版本。",
+              "minLength": 1,
+              "maxLength": 32
+            },
+            "firmwareOnThisHostPhysicallyValidated": {
+              "type": "boolean",
+              "description": "捆绑固件是否已在 hostVersion 指定的宿主上完成有证据的实机检查；按该发布的真实记录填写，不由插件主机测试推断。"
+            }
+          },
+          "required": [
+            "apiVersion",
+            "sourceCommit",
+            "hostVersion",
+            "firmwareOnThisHostPhysicallyValidated"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "board",
+        "capabilities",
+        "firmware",
+        "pluginSdk"
+      ],
+      "additionalProperties": false
+    },
+    "overview": {
+      "type": "object",
+      "description": "校验本地应用镜像后才返回的设备与交付概览。",
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "description": "发布清单格式版本。",
+          "enum": [
+            1
+          ]
+        },
+        "board": {
+          "type": "object",
+          "description": "此固件明确针对的开发板；不代表自动识别了已登记设备的硬件。",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "开发板完整名称。",
+              "enum": [
+                "M5Stack Cardputer-Adv"
+              ]
+            },
+            "chip": {
+              "type": "string",
+              "description": "ESP32 镜像目标芯片。",
+              "enum": [
+                "esp32s3"
+              ]
+            },
+            "flashBytes": {
+              "type": "integer",
+              "description": "板载 Flash 容量，字节。",
+              "enum": [
+                8388608
+              ]
+            },
+            "psram": {
+              "type": "boolean",
+              "description": "此目标没有 PSRAM。",
+              "enum": [
+                false
+              ]
+            },
+            "display": {
+              "type": "object",
+              "description": "板载屏幕分辨率，像素。",
+              "properties": {
+                "width": {
+                  "type": "integer",
+                  "description": "横向像素。",
+                  "enum": [
+                    240
+                  ]
+                },
+                "height": {
+                  "type": "integer",
+                  "description": "纵向像素。",
+                  "enum": [
+                    135
+                  ]
+                }
+              },
+              "required": [
+                "width",
+                "height"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "chip",
+            "flashBytes",
+            "psram",
+            "display"
+          ],
+          "additionalProperties": false
+        },
+        "capabilities": {
+          "type": "object",
+          "description": "这个固件候选的功能范围；Agent 数量不是逐个实机验收声明。",
+          "properties": {
+            "transport": {
+              "type": "string",
+              "description": "首版仅使用官方局域网标准接口。",
+              "enum": [
+                "lan-standard"
+              ]
+            },
+            "agentCatalogCount": {
+              "type": "integer",
+              "description": "内置 Agent 目录项数。",
+              "enum": [
+                16
+              ]
+            },
+            "studioPatchRequired": {
+              "type": "boolean",
+              "description": "无需修改 Studio 核心或新增电脑桥接。",
+              "enum": [
+                false
+              ]
+            },
+            "remoteSupported": {
+              "type": "boolean",
+              "description": "此交付不承诺跨网远程功能。",
+              "enum": [
+                false
+              ]
+            },
+            "studioOtaSupported": {
+              "type": "boolean",
+              "description": "此插件不提供 Studio OTA 或刷写。",
+              "enum": [
+                false
+              ]
+            },
+            "sdRequiredForChatVoice": {
+              "type": "boolean",
+              "description": "聊天语音使用压缩 RAM 暂存，无需 SD 卡。",
+              "enum": [
+                false
+              ]
+            },
+            "maximumRecordingSeconds": {
+              "type": "integer",
+              "description": "单次聊天录音上限，秒。",
+              "enum": [
+                5
+              ]
+            },
+            "chineseInput": {
+              "type": "boolean",
+              "description": "包含中文输入交互。",
+              "enum": [
+                true
+              ]
+            },
+            "chatHistory": {
+              "type": "boolean",
+              "description": "包含聊天记录交互。",
+              "enum": [
+                true
+              ]
+            },
+            "explicitAgentModes": {
+              "type": "boolean",
+              "description": "可选：捆绑固件明确支持首页选择 Studio模型／原生CLI 时为 true。省略等同 false，不根据版本号猜测。"
+            },
+            "shortG0Returns": {
+              "type": "boolean",
+              "description": "可选：捆绑固件明确支持短按 G0 返回时为 true。省略等同 false；不改变旧固件的按键说明。"
+            }
+          },
+          "required": [
+            "transport",
+            "agentCatalogCount",
+            "studioPatchRequired",
+            "remoteSupported",
+            "studioOtaSupported",
+            "sdRequiredForChatVoice",
+            "maximumRecordingSeconds",
+            "chineseInput",
+            "chatHistory"
+          ],
+          "additionalProperties": false
+        },
+        "firmware": {
+          "type": "object",
+          "description": "应用分区更新包；不是空白设备整机安装包。",
+          "properties": {
+            "version": {
+              "type": "string",
+              "description": "固件自身完整版本标识。",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "releaseLabel": {
+              "type": "string",
+              "description": "公开预发布标签。",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "stage": {
+              "type": "string",
+              "description": "保留真实预发布状态，不称稳定版。",
+              "enum": [
+                "development-preview"
+              ]
+            },
+            "applicationOffset": {
+              "type": "integer",
+              "description": "Ekko 应用偏移 0x10000。",
+              "enum": [
+                65536
+              ]
+            },
+            "applicationPartitionBytes": {
+              "type": "integer",
+              "description": "现有应用分区 0x330000 字节。",
+              "enum": [
+                3342336
+              ]
+            },
+            "factoryOffset": {
+              "type": "integer",
+              "description": "必须保留的原厂应用起始偏移 0x340000。",
+              "enum": [
+                3407872
+              ]
+            },
+            "requiresExistingLayout": {
+              "type": "boolean",
+              "description": "刷写前必须核对现有布局。",
+              "enum": [
+                true
+              ]
+            },
+            "blankDeviceSupported": {
+              "type": "boolean",
+              "description": "不支持把这个应用包直接刷入空白原厂设备。",
+              "enum": [
+                false
+              ]
+            },
+            "partitionTable": {
+              "type": "object",
+              "description": "已有兼容分区表的校验基准；插件不读取设备 Flash。",
+              "properties": {
+                "offset": {
+                  "type": "integer",
+                  "description": "已有分区表偏移。",
+                  "enum": [
+                    32768
+                  ]
+                },
+                "bytes": {
+                  "type": "integer",
+                  "description": "分区表参与校验的长度。",
+                  "enum": [
+                    3072
+                  ]
+                },
+                "sha256": {
+                  "type": "string",
+                  "description": "已有分区表 SHA-256，小写十六进制。",
+                  "minLength": 64,
+                  "maxLength": 64
+                }
+              },
+              "required": [
+                "offset",
+                "bytes",
+                "sha256"
+              ],
+              "additionalProperties": false
+            },
+            "files": {
+              "type": "array",
+              "description": "已打包的应用镜像；下载使用同仓库、精确标签及资产名，或旧版的固定完整提交。",
+              "items": {
+                "type": "object",
+                "description": "一个应用分区镜像。",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "description": "相对插件根目录的 firmware/ 内文件路径。",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "bytes": {
+                    "type": "integer",
+                    "description": "本地镜像精确字节数。",
+                    "minimum": 24,
+                    "maximum": 3342336
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "description": "镜像 SHA-256，小写十六进制。",
+                    "minLength": 64,
+                    "maxLength": 64
+                  },
+                  "offset": {
+                    "type": "integer",
+                    "description": "应用刷写偏移。",
+                    "enum": [
+                      65536
+                    ]
+                  },
+                  "downloadUrl": {
+                    "type": "string",
+                    "description": "固定完整 40 位提交的公开 GitHub raw HTTPS 下载地址。",
+                    "minLength": 1,
+                    "maxLength": 2048
+                  },
+                  "downloadAsset": {
+                    "type": "string",
+                    "description": "可选：GitHub Release 中的精确应用资产 basename；填写时下载地址必须与来源仓库、releaseLabel 及此字段完全对应，不允许斜杠、查询或编码转义。省略时仅接受同仓库、固定完整源码提交的旧 raw 下载地址。",
+                    "minLength": 5,
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "path",
+                  "bytes",
+                  "sha256",
+                  "offset",
+                  "downloadUrl"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 1
+            },
+            "source": {
+              "type": "object",
+              "description": "公开来源链接；不返回本机路径。",
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "description": "公开 GitHub 来源仓库。",
+                  "minLength": 1,
+                  "maxLength": 2048
+                },
+                "commit": {
+                  "type": "string",
+                  "description": "固件来源的完整 Git 提交。",
+                  "minLength": 40,
+                  "maxLength": 40
+                },
+                "url": {
+                  "type": "string",
+                  "description": "固定源码提交的 GitHub 浏览地址。",
+                  "minLength": 1,
+                  "maxLength": 2048
+                },
+                "releaseUrl": {
+                  "type": "string",
+                  "description": "公开预发布说明页。",
+                  "minLength": 1,
+                  "maxLength": 2048
+                },
+                "relinkUrl": {
+                  "type": "string",
+                  "description": "固定提交的首次绑定及重新连接说明。",
+                  "minLength": 1,
+                  "maxLength": 2048
+                },
+                "archive": {
+                  "type": "object",
+                  "description": "可选的完整对应源码归档；省略保持旧清单兼容。填写时校验本地普通文件大小、SHA及同仓库同标签精确下载资产，不从网络加载源码。",
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "description": "相对插件根目录的 firmware/ 内 .tar.gz 路径；不允许逃逸、链接或特殊文件。",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "bytes": {
+                      "type": "integer",
+                      "description": "源码归档实际字节数。",
+                      "minimum": 1,
+                      "maximum": 33554432
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "description": "本地完整对应源码归档 SHA-256，小写十六进制。",
+                      "minLength": 64,
+                      "maxLength": 64
+                    },
+                    "downloadAsset": {
+                      "type": "string",
+                      "description": "同仓库同 releaseLabel 的精确源码 .tar.gz 资产 basename，不接受斜杠、查询或编码转义。",
+                      "minLength": 8,
+                      "maxLength": 256
+                    },
+                    "downloadUrl": {
+                      "type": "string",
+                      "description": "同仓库、同发布标签、同 downloadAsset 的 GitHub Release 下载 URL。",
+                      "minLength": 1,
+                      "maxLength": 2048
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "bytes",
+                    "sha256",
+                    "downloadAsset",
+                    "downloadUrl"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "repository",
+                "commit",
+                "url",
+                "releaseUrl",
+                "relinkUrl"
+              ],
+              "additionalProperties": false
+            },
+            "validation": {
+              "type": "object",
+              "description": "历史验收的精确边界；不把编译、主机测试或旧版本验收冒充当前实机验收。",
+              "properties": {
+                "textStudioVersions": {
+                  "type": "array",
+                  "description": "已获得文字回复用户确认的 Studio 版本。",
+                  "items": {
+                    "type": "string",
+                    "description": "版本号。",
+                    "maxLength": 32
+                  },
+                  "maxItems": 32
+                },
+                "voiceStudioVersions": {
+                  "type": "array",
+                  "description": "已获得识别、回复及实际声音用户确认的 Studio 版本。",
+                  "items": {
+                    "type": "string",
+                    "description": "版本号。",
+                    "maxLength": 32
+                  },
+                  "maxItems": 32
+                },
+                "fiveSecondAutoStopUserConfirmed": {
+                  "type": "boolean",
+                  "description": "用户确认超过上限后可自动停止。"
+                },
+                "fullFiveSecondByteCountObserved": {
+                  "type": "boolean",
+                  "description": "是否实际抓到完整五秒采集字节数。"
+                },
+                "allAgentsPhysicallyValidated": {
+                  "type": "boolean",
+                  "description": "是否已逐个实机验收全部 16 Agent。"
+                },
+                "fullMatrixComplete": {
+                  "type": "boolean",
+                  "description": "原计划全部故障及恢复矩阵是否完成。"
+                }
+              },
+              "required": [
+                "textStudioVersions",
+                "voiceStudioVersions",
+                "fiveSecondAutoStopUserConfirmed",
+                "fullFiveSecondByteCountObserved",
+                "allAgentsPhysicallyValidated",
+                "fullMatrixComplete"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "releaseLabel",
+            "stage",
+            "applicationOffset",
+            "applicationPartitionBytes",
+            "factoryOffset",
+            "requiresExistingLayout",
+            "blankDeviceSupported",
+            "partitionTable",
+            "files",
+            "source",
+            "validation"
+          ],
+          "additionalProperties": false
+        },
+        "pluginSdk": {
+          "type": "object",
+          "description": "插件 SDK 与当前宿主的检查边界，与旧固件实机范围分开。",
+          "properties": {
+            "apiVersion": {
+              "type": "integer",
+              "description": "官方插件 API 版本。",
+              "enum": [
+                1
+              ]
+            },
+            "sourceCommit": {
+              "type": "string",
+              "description": "生成本插件使用的官方 SDK 完整提交。",
+              "minLength": 40,
+              "maxLength": 40
+            },
+            "hostVersion": {
+              "type": "string",
+              "description": "本次插件兼容性检查宿主版本。",
+              "minLength": 1,
+              "maxLength": 32
+            },
+            "firmwareOnThisHostPhysicallyValidated": {
+              "type": "boolean",
+              "description": "捆绑固件是否已在 hostVersion 指定的宿主上完成有证据的实机检查；按该发布的真实记录填写，不由插件主机测试推断。"
+            }
+          },
+          "required": [
+            "apiVersion",
+            "sourceCommit",
+            "hostVersion",
+            "firmwareOnThisHostPhysicallyValidated"
+          ],
+          "additionalProperties": false
+        },
+        "artifactVerified": {
+          "type": "boolean",
+          "description": "本次已验证长度、SHA-256、ESP32-S3 镜像与应用边界；不是实机刷写结果。",
+          "enum": [
+            true
+          ]
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "board",
+        "capabilities",
+        "firmware",
+        "pluginSdk",
+        "artifactVerified"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "rpc": {
+    "get-overview": {
+      "description": "读取并校验包内固件及公开来源；不联网、不刷写。",
+      "input": "empty",
+      "output": "overview"
+    },
+    "list-devices": {
+      "description": "以本次真实调用者读取官方 /api/mcu-devices 并裁剪敏感字段。",
+      "input": "empty",
+      "output": "devices"
+    },
+    "get-settings": {
+      "description": "读取当前真实用户和 Profile 偏好；不存在时返回两个空字符串。",
+      "input": "empty",
+      "output": "settings"
+    },
+    "save-settings": {
+      "description": "校验并保存本次真实用户和 Profile 的偏好。",
+      "input": "settings",
+      "output": "saved"
+    }
+  },
+  "storage": {
+    "settings": {
+      "description": "用户/Profile 独立偏好；永不保存凭据。",
+      "model": "settings",
+      "version": 1,
+      "scope": "namespace(String(run.identity.userId), run.identity.profile)"
+    }
+  },
+  "tools": {},
+  "commands": {},
+  "actions": {},
+  "events": {},
+  "checkpoints": {}
+}

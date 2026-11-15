@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAtUtc": "2026-11-15T16:59:58.105353+00:00",
+  "pluginVersion": "0.2.0-alpha.5",
+  "firmwareVersion": "cardputer-adv-v10.0.0-alpha.5",
+  "scope": "Local candidate validation only; no release publishing, final host install or M5 operation",
+  "checks": {
+    "priorFiveChecksumEntriesMatchedBeforeReplacement": true,
+    "newApplicationBytes": 3321056,
+    "newApplicationSha256": "96e29f0aca8160e902f7cc56d8cac4446b435987b64fe0a800bc11f741d002c0",
+    "newSourceArchiveBytes": 10158588,
+    "newSourceArchiveSha256": "23a8756227552906965be0aded09a7c14528f6455279357422eede93d3c2e258",
+    "harnessCheckPassed": true,
+    "unitTestsPassed": 29,
+    "unitTestsSkipped": 0,
+    "chromeSandboxTestsPassed": 5,
+    "chromeSandboxTestsSkipped": 0,
+    "additionalBuildScriptPresent": false,
+    "firmwareChecksumEntries": 5,
+    "wrongRepositoryTagAssetAndEscapesRejected": true,
+    "legacyFullCommitRawFormRetained": true
+  },
+  "pending": [
+    "Publish firmware Release and verify actual downloaded application/source SHA-256",
+    "Publish independent plugin repository and verify declared links",
+    "Install final bundle in isolated official 0.8.24 host and restore plugin state",
+    "Current alpha.5 physical M5 acceptance"
+  ],
+  "currentFirmwareValidationInherited": false,
+  "historicalEvidenceUnmodified": "official-host-0.8.24-20261116.json"
+}
