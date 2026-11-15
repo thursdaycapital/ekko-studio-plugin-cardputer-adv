@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "checkedAtUtc": "2026-11-15T17:35:58.333107+00:00",
+  "pluginVersion": "0.2.0-alpha.5",
+  "firmwareVersion": "cardputer-adv-v10.0.0-alpha.5",
+  "host": {
+    "version": "0.8.24",
+    "kind": "daily official Studio",
+    "serverEntrySha256": "c04bfec6333a0e70d763ba93ec2fff7bf3f7b6241b6b75c4d5c1d57a571084e0",
+    "officialSealedResourceHashesMatch": true,
+    "strictSignatureFailure": "six generated Python cache files"
+  },
+  "installation": {
+    "ordinaryChromeUi": true,
+    "githubRootUrlAccepted": true,
+    "sourceUrl": "https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv",
+    "normalizedCommit": "5c455ed12a8c6cfd9566f03319be5ee810425c13",
+    "initiallyDisabled": true,
+    "userEnabled": true,
+    "runtimeActive": true,
+    "keptEnabled": true,
+    "otherPluginsChanged": false,
+    "agentModelAuthSettingsChanged": false,
+    "corePatched": false
+  },
+  "testedFileSha256": {
+    "plugin.json": "ed75fa1cdb1ba2a24bb119061c03ee4900857028deaeb27540d77cfe615b497c",
+    "server.mjs": "aadf8c5389fee15b4096c6159b34b1aac5e5eb4071a88f318f6834c4ab864472",
+    "client.mjs": "7a05111f044f8c764065be7a5e00bd854ab428d0dc94d0c9e5cd087f350fbec2",
+    "lib/backend.mjs": "b5bd3110d0479cafaec90344ddcc5ffe3c2ade32378deea3fd4fe6ec3c1b6f57",
+    "contracts/plugin.json": "7c8a35cd5be2f02b9e9e4a33cdc4dd456a7fe2280bfd4b0aef5f79240dcf3b48",
+    "firmware/release.json": "6ef8894c27c4b0ab6736ea14243e60bbba51921362c35a573a756e2a495caad2",
+    "firmware/ekko-stock-lan-update-0x10000.bin": "96e29f0aca8160e902f7cc56d8cac4446b435987b64fe0a800bc11f741d002c0",
+    "firmware/source.tar.gz": "a495bef8c1fa6394009610eb965dd9ba2f479b165ace238e3cfc2821bce7dfae"
+  },
+  "checks": {
+    "rpcPassed": [
+      "get-overview",
+      "get-settings",
+      "list-devices"
+    ],
+    "binaryAndR2SourceArchiveVerified": true,
+    "actualRenderedViews": [
+      "devices",
+      "firmware",
+      "guide",
+      "preferences"
+    ],
+    "pluginAlerts": 0,
+    "browserPageErrors": 0,
+    "realDeviceCount": 1,
+    "lanConnectedDeviceCount": 0
+  },
+  "boundaries": {
+    "m5TextTest": false,
+    "m5VoiceTest": false,
+    "m5RecoveryTest": false,
+    "newModelRequests": 0,
+    "firmwareFlashedByThisPluginCheck": false,
+    "noDeviceIdentifiersOrCredentialsInThisReport": true
+  }
+}
