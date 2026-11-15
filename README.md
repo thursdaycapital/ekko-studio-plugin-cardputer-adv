@@ -4,7 +4,7 @@
 
 **插件是可选的管理入口，M5 聊天不依赖安装插件。** 附带固件仅用于本项目既有 8MiB 双固件布局更新，不支持陌生设备或新机首刷。先看[三步使用教程](docs/QUICKSTART.zh-CN.md)，详细边界见[固件说明](docs/FIRMWARE.zh-CN.md)。
 
-当前本地候选是插件 **0.2.0-alpha.5**，捆绑固件 **cardputer-adv-v10.0.0-alpha.5**。清单、镜像与完整源码已经按真实文件更新；本版 M5 实机验收仍待完成，不能沿用旧版测试结果。固件 Release 已公开，应用与 r2 源码均已从公开地址实际下载并核对大小与 SHA；独立插件仓库仍待创建并验证，不能把其目标地址当作已可安装链接。详见[发布清单](docs/SUBMISSION.zh-CN.md)。
+当前公开预览为插件 **0.2.0-alpha.5**，捆绑固件 **cardputer-adv-v10.0.0-alpha.5**。独立插件仓库与固件 Release 均已公开；应用和 r2 源码已实际下载并核对大小与 SHA。插件已在未经修改的官方 Studio 0.8.24 中通过普通 Chrome 安装、启用、四页面和真实设备列表检查；本版 M5 实机验收仍待完成，不能沿用旧版测试结果。详见[发布清单](docs/SUBMISSION.zh-CN.md)。
 
 ## 能做什么
 
@@ -20,14 +20,13 @@
 
 需要包含官方 SDK v1 插件中心的 Studio。SDK 来源仍是官方 **0.8.23 / `80d57ddffe3105b3ffadf4cedc0b995ef3951d0f`**；当前兼容宿主为未经修改的官方 **0.8.24**。旧 0.1.1 的真实宿主检查单独留存，alpha.5 最终 r2 捆绑已在该原版宿主完成安装、RPC、四视图实际 Chrome 和原生卸载复测；这不是 M5 实机验收。
 
-1. 把完整项目解压到 **Studio 服务端所在机器**，目录根部应有 `plugin.json`。
-2. 打开 Studio「插件中心」，选择本地目录安装，填写该目录的绝对路径。
-3. 由超级管理员按宿主流程确认信任，安装后启用。插件不会绕过此确认。
-4. 从插件详情进入「设备」，或在头像菜单「导航栏设置」中添加 Cardputer-Adv 入口。
+1. 打开 Studio「插件中心」→「安装插件」，粘贴 [GitHub 仓库根地址](https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv)。
+2. 由超级管理员按宿主流程确认信任并安装，再点击「启用」。官方 UI 会自动把仓库地址固定到安装时的完整提交，不需要手动输入 SHA。本轮实际安装固定到 `5c455ed12a8c6cfd9566f03319be5ee810425c13`。
+3. 从插件详情进入「设备」，或在头像菜单「导航栏设置」中添加 Cardputer-Adv 入口。
 
 本地安装复制的是安装时快照；改源码后重新安装，或用 `ekko-studio plugins link /absolute/path/to/project` 开发。入口已经是可执行 `.mjs`，普通安装无需运行构建脚本。
 
-之后发布到**根部有 `plugin.json` 的独立公开仓库**，其他人可直接在插件中心粘贴仓库根地址。不要把固件仓库或 `/tree/...` 子页面当成本插件安装地址。提交材料见 [提交说明](docs/SUBMISSION.zh-CN.md)。本地候选的目标插件仓库为 `thursdaycapital/ekko-studio-plugin-cardputer-adv`；本次准备未创建仓库、提交云端审核或发布 npm。
+独立仓库 `thursdaycapital/ekko-studio-plugin-cardputer-adv` 已公开，根部含 `plugin.json`，仓库根地址的普通 UI 安装流程已实测。不要把固件仓库或 `/tree/...` 子页面当成本插件安装地址。本项目尚未提交 Studio 云端目录审核或发布 npm；材料见 [提交说明](docs/SUBMISSION.zh-CN.md)。
 
 ## 绑定与固件
 

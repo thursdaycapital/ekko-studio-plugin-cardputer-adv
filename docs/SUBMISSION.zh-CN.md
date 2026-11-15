@@ -1,12 +1,12 @@
 # 提交 Ekko Studio 插件
 
-本地候选为 `0.2.0-alpha.5`，按官方模板独立打包；未提交到云端目录或 npm。本轮只准备本地材料，固件 Release 已发布且下载校验通过；最终 r2 插件宿主复测已通过；独立插件仓库发布和本版实机验收仍须完成。公开材料不得包含私人完整备份、NVS、Wi-Fi 密码、认证 / API Key 或原始日志。
+公开预览为 `0.2.0-alpha.5`，按官方模板独立打包；独立插件仓库与固件 Release 已发布，下载校验及最终 r2 插件宿主复测已通过。尚未提交 Studio 云端目录审核或发布 npm，本版 M5 实机验收仍待完成。公开材料不得包含私人完整备份、NVS、Wi-Fi 密码、认证 / API Key 或原始日志。
 
 ## 仓库结构
 
-创建独立公开仓库，在默认分支根目录放本项目的 `plugin.json`、可执行入口和全部分发文件。不要嵌套到子目录，也不要把裸固件仓库当插件安装源。
+独立公开仓库 [thursdaycapital/ekko-studio-plugin-cardputer-adv](https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv) 已创建，在默认分支根目录包含 `plugin.json`、可执行入口和全部分发文件。不要把裸固件仓库当插件安装源。
 
-本地候选元数据已按目标仓库 `thursdaycapital/ekko-studio-plugin-cardputer-adv` 填入 `repository`、`documentation`、`issues`、`changelog`；这些地址当前属于待发布目标，不能当作已可安装的链接。由发布者实际创建并上传后，逐项验证根目录清单和文档地址。`package.json` 保留 private 阻止误发 npm，不影响 GitHub 或本地安装。
+元数据中的 `repository`、`documentation`、`issues`、`changelog` 指向该公开仓库。日常官方 Studio 0.8.24 已通过普通 Chrome 登录、插件中心提交 HTTPS 根地址、确认信任、安装与启用；官方 UI 自动固定到完整提交 `5c455ed12a8c6cfd9566f03319be5ee810425c13`。四个实际页面、真实设备列表和应用／r2 源码校验均正常；不需要用户手输提交或改电脑后端。`package.json` 保留 private 阻止误发 npm，不影响 GitHub 或本地安装。
 
 运行 `npm run harness:check`、`npm test`、浏览器测试与 `npm pack`，检查打包内容。远程安装禁止生命周期脚本，当前 `.mjs` 已可直接执行，没有构建前提。随包保留 SDK、文档、源码和许可材料。
 
@@ -30,7 +30,7 @@ M5Stack Cardputer-Adv 的 Ekko Studio 设备管理与固件配套插件。使用
 
 ## 尚需完成的发布门槛
 
-- 实际创建并上传目标独立插件仓库，验证全部候选元数据链接；本地填写 URL 不等于已发布。
+- 独立仓库已经公开并实测根地址安装；提交云端目录审核前，继续核对届时的默认分支、元数据链接和版本。
 - 未经修改的官方 Studio 0.8.24 上，以本版 alpha.5 验证真实 M5 的绑定、中文输入、历史、语音和恢复。SDK / 模拟 / 旧版结果不等于本版实机通过。
 - 若要支持新用户从出厂设备安装，需要另行提供完整首刷方案，并实测空白 NVS 首次开机和绑定；本更新包不能承担该范围。
 - 核对头像、视频等素材的公开再分发授权；缺许可的替换或取得授权，不能用上游代码许可覆盖。
