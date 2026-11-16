@@ -1,14 +1,14 @@
 # 安装插件、更新已有固件与首次绑定
 
-当前本地候选为插件 `0.2.0-alpha.6` / 固件 `cardputer-adv-v10.0.0-alpha.6`。应用 3,321,072 B、SHA `9208e53b8336523b50a3d49ce5a18f559f9aa79a885bef6df2deaf201c930230`，源码随包归档 10,104,056 B、SHA `dedf8d3dfb27b5c55ecfb2f8bdda018dbae2ae5e5f670fa7de810d08f81d72e0`。应用外链固定到公开提交 `a78fc66b7b57b06cd1de8dd990d633d0b497fda7`；alpha6 Release 仍为草稿，不提供其公共下载或伪造源码下载。本版插件已在日常官方0.8.24实际升级并通过三个读取RPC、四页面及包内校验；这不代表重新刷写了M5或补完实体矩阵。
+当前本地候选为插件 `0.3.0-alpha.1` / 固件 `cardputer-adv-v10.0.0-alpha.6`。应用 3,321,072 B、SHA `9208e53b8336523b50a3d49ce5a18f559f9aa79a885bef6df2deaf201c930230`，源码随包归档 10,104,056 B、SHA `dedf8d3dfb27b5c55ecfb2f8bdda018dbae2ae5e5f670fa7de810d08f81d72e0`。应用外链固定到公开提交 `a78fc66b7b57b06cd1de8dd990d633d0b497fda7`；alpha6 Release 仍为草稿，不提供其公共下载或伪造源码下载。本版新增USB更新作业，验证以[检查记录](VALIDATION.zh-CN.md)为准；旧插件验证不代表新USB写入或实体矩阵通过。
 
-普通使用先看[三步教程](QUICKSTART.zh-CN.md)。插件为可选管理入口，设备直连与聊天不依赖安装它。以下保留完整刷写校验步骤，不把界面简化称为自动刷写。
+普通使用先看[三步教程](QUICKSTART.zh-CN.md)。插件为可选管理入口，设备直连与聊天不依赖安装它。已有兼容布局可用[USB更新界面](USB_UPDATE.zh-CN.md)，以下命令保留作人工更新与校验参考。
 
 ## 1. 安装电脑插件
 
-解压完整插件候选包至运行 Studio 的机器。打开「插件中心」，按本地绝对目录安装流程确认信任并启用。默认不会自动加入主导航；从插件详情打开，或在头像菜单「导航栏设置」添加 Cardputer-Adv。
+把完整插件候选目录放到运行Studio的机器。本地目录安装只复制目录，先在该目录准备生产依赖：Git克隆包含package-lock.json时运行`npm ci --ignore-scripts --omit=dev`；npm分发包解压后没有lock则运行`npm install --ignore-scripts --omit=dev`。不要在已安装的快照内改文件。然后打开「插件中心」，按本地绝对目录流程确认信任并启用。默认不会自动加入主导航；从插件详情打开，或在头像菜单「导航栏设置」添加Cardputer-Adv。
 
-入口已为成品 JavaScript，不需要安装时构建；它不修改 Studio、Agent 配置或设备。当前公开 GitHub 仓库的 alpha5 安装验证是历史记录，不能表示尚未发布的本地 alpha6 已通过安装。本版验证结果稍后据实补充。
+入口已为成品JavaScript，不需要安装时构建。官方GitHub/npm安装分支会安装生产依赖；本地目录安装不会代装依赖。Node串口依赖携带平台预编译组件，缺少匹配组件时页面会报告USB不可用，不自动编译或改Studio。安装及打开页面不自动操作设备。用户在固件页明确确认后才能更新应用，不修改Studio核心或Agent配置。
 
 应用可从固件页复制固定公开提交的 raw 地址，在外部浏览器下载并核 SHA；iframe 内没有下载或 USB 权限。`firmware/source.tar.gz` 已随插件包附带，暂无独立公开的 alpha6 源码归档下载。为运行以下命令，应解压完整插件分发包并在其根目录操作，确认 `firmware/` 内文件存在；不要对安装中正在使用的宿主目录进行改写。
 

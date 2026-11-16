@@ -12,7 +12,10 @@ const labels = {
     save: '保存设置', saveSelection: '保存设备选择', saving: '正在保存…', cancel: '撤销修改', saved: '设置已保存', cancelled: '已恢复上次保存的内容', saveFailed: '保存失败，修改仍保留在表单中。',
     nativeTitle: '原生绑定入口', nativePage: '设备原生管理页', noOrigin: '尚未保存设备地址。请在偏好设置填写 M5 当前的局域网地址。', nativeHint: '复制地址，在独立浏览器打开。M5 与电脑须在同一局域网；首次绑定沿用原生登录和 Profile 选择。',
     selectText: '选中文本', selected: '已选中，请按 Ctrl/Cmd+C 手动复制。', copyHint: '地址和校验值可选中复制，在独立浏览器或终端中使用。',
-    validatedFirmware: '固件与校验', existingOnly: '仅适用于既有双固件布局', noFirstFlash: '这不是完整首刷镜像。不要对空白设备或其他分区布局直接刷写。', firmwareIntro: '现有 Ekko 应用分区更新包。下载和刷写须使用独立工具；插件页面不能下载或刷写硬件。',
+    validatedFirmware: '固件与校验', existingOnly: '仅适用于既有双固件布局', noFirstFlash: '这不是完整首刷镜像。不要对空白设备或其他分区布局直接刷写。', firmwareIntro: '现有 Ekko 应用分区更新包。可使用下方 Studio 服务端 USB 升级，或复制下载地址使用独立刷写工具。',
+    usbTitle: 'USB 固件升级', usbHostHint: '数据线须插到运行 Studio 服务端的电脑。NAS／远程网页的浏览器电脑不等于服务端；不会使用浏览器 USB。', usbChecking: '正在检查服务端 USB 能力…', usbUnavailable: '当前服务端无法使用 USB 升级。', usbPlatform: 'Studio 服务端平台', usbScan: '扫描 USB 设备', usbScanning: '正在扫描…', usbPort: 'USB 设备', usbChoose: '请选择扫描到的设备', usbNoPorts: '没有发现可用 USB 设备，请检查数据线与下载模式后重新扫描。', usbBoard: '我确认这是 M5Stack Cardputer-Adv、8MiB Flash，且已安装本项目兼容的双固件布局。', usbStart: '刷入 / 升级固件', usbConfirming: '等待确认…', usbSubmitting: '正在提交…', usbRefresh: '刷新任务状态', usbRefreshing: '正在查询…', usbCancel: '取消任务', usbCancelling: '正在取消…', usbProgress: 'USB 升级进度', usbUnknown: '提交结果未确认。不会自动重试；请先刷新任务状态，核对是否已开始，再决定是否手动重试。', usbNoJob: '未发现已提交的任务。可重新确认后手动提交。', usbPollPaused: '页面观察已暂停，任务可能仍在运行。请刷新任务状态继续查询；关闭页面不会取消任务。', usbCloseHint: '关闭页面不会取消任务。只有安全阶段允许取消；写入开始后不要拔线或关机。', usbComplete: '写入和保留区校验通过。', usbNeedsCheck: '任务已结束，但校验记录不完整，请核对设备和任务结果。', usbLaunch: '请在 M5 原厂菜单选择 EkkoStudio。启动、聊天和语音仍需在设备上确认。', usbResultUnknown: '设备结果尚未确认，请保持连接并核对任务和设备；不要直接重复刷写。', usbBackup: '本机私有完整备份', usbAppCheck: '应用校验', usbRegionsCheck: '原厂与设置区域校验', usbYes: '已完成', usbNotYet: '未确认', usbConfirmSafety: '仅写入 0x10000 的 Ekko 应用分区；刷写前自动在本机保存私有完整备份，并校验原厂固件与设置区域保持完整。中断不会自动回滚，写入后不能取消。确认继续？', usbCancelFailed: '取消结果未确认，请刷新任务状态。',
+    usbPhases: { queued: '已排队', opening: '正在打开设备', checking: '正在检查设备和布局', 'backing-up': '正在备份', writing: '正在写入', verifying: '正在读回校验', restarting: '正在复位', completed: '任务结束', failed: '任务失败', cancelled: '任务已取消' },
+    usbRecheck: '重新核对并扫描', usbRechecking: '等待重新核对…', usbRecheckSafety: '上次更新的设备结果仍未知。请先检查设备状态和数据线，确认本机私有备份已保留，并按教程使 M5 进入 G0 下载模式。此操作只重新扫描，不恢复旧任务、不自动重试；之后仍需再次确认才能刷写，无法确认关闭的 USB 锁也不会绕过。继续重新核对并扫描？', usbPreviousUnknown: '上次更新结果仍未知，已由你明确选择重新核对。私有备份仍保留；重新扫描或再次刷写不会证明上次结果正常。', usbDuration: '完整备份、写入和读回可能需要约 30 分钟。页面暂停查询或关闭后，服务端任务仍会继续；重新打开后可刷新任务状态。', usbPortExpiry: '扫描结果两分钟有效，过期请重新扫描。',
     version: '版本', file: '文件', bytes: '字节', size: '文件大小', offset: '写入偏移', partition: '应用分区大小', hash: 'SHA-256', downloadUrl: '公开固定下载地址', sourceUrl: '源码地址', releaseUrl: '发布页地址',
     draft: '开发预览，Release 尚未公开；下方固件地址已固定到公开源码提交。', sourceBundled: '对应源码已随插件包附带', sourcePath: '包内源码文件', sourceHash: '源码 SHA-256', sourceDownload: '源码下载地址',
     expiryRecovery: '凭证过期自动恢复', restartRecovery: 'Studio 重启自动恢复', physicalAgents: '已有实测的 Agent', autoStopObserved: '本版自动截止日志', verified: '已验证', pending: '待核对', testsPaused: '剩余实体测试已按用户要求暂停，未完成项保留待验收。',
@@ -35,7 +38,10 @@ const labels = {
     save: 'Save preferences', saveSelection: 'Save device selection', saving: 'Saving…', cancel: 'Discard changes', saved: 'Preferences saved', cancelled: 'Restored the last saved values', saveFailed: 'Save failed. Your changes remain in the form.',
     nativeTitle: 'Native pairing', nativePage: 'Native device management page', noOrigin: 'No device address is saved. Enter the M5’s current LAN address in Preferences.', nativeHint: 'Copy this address into a separate browser. The M5 and computer must share a LAN. Native login and Profile selection handle first pairing.',
     selectText: 'Select text', selected: 'Selected. Press Ctrl/Cmd+C to copy manually.', copyHint: 'Select and copy addresses or checksums for use in a separate browser or terminal.',
-    validatedFirmware: 'Firmware and checksums', existingOnly: 'Existing dual-firmware layout only', noFirstFlash: 'This is not a complete first-flash image. Do not flash a blank device or a different partition layout.', firmwareIntro: 'An update for the existing Ekko application partition. Use a separate tool for download and flashing; this plugin page cannot download or flash hardware.',
+    validatedFirmware: 'Firmware and checksums', existingOnly: 'Existing dual-firmware layout only', noFirstFlash: 'This is not a complete first-flash image. Do not flash a blank device or a different partition layout.', firmwareIntro: 'An update for the existing Ekko application partition. Use the Studio server USB updater below, or copy the download URL for a separate flashing tool.',
+    usbTitle: 'USB firmware update', usbHostHint: 'Connect the data cable to the computer running the Studio server. With a NAS or remote page, the browser computer may be different. Browser USB is not used.', usbChecking: 'Checking server USB support…', usbUnavailable: 'USB updates are unavailable on this server.', usbPlatform: 'Studio server platform', usbScan: 'Scan USB devices', usbScanning: 'Scanning…', usbPort: 'USB device', usbChoose: 'Choose a scanned device', usbNoPorts: 'No usable USB devices found. Check the data cable and download mode, then scan again.', usbBoard: 'I confirm this is an M5Stack Cardputer-Adv with 8MiB Flash and this project’s compatible dual-firmware layout already installed.', usbStart: 'Flash / update firmware', usbConfirming: 'Awaiting confirmation…', usbSubmitting: 'Submitting…', usbRefresh: 'Refresh update status', usbRefreshing: 'Checking…', usbCancel: 'Cancel update', usbCancelling: 'Cancelling…', usbProgress: 'USB update progress', usbUnknown: 'Submission result is unknown. Nothing will be retried automatically. Refresh update status to check whether it started before manually retrying.', usbNoJob: 'No submitted update was found. You may confirm again and submit manually.', usbPollPaused: 'Page monitoring has paused; the update may still be running. Refresh its status to continue. Closing this page does not cancel it.', usbCloseHint: 'Closing this page does not cancel the update. Cancellation is allowed only during safe phases. Do not unplug or power off once writing starts.', usbComplete: 'Application and preserved-region verification passed.', usbNeedsCheck: 'The update ended, but verification records are incomplete. Check the device and update result.', usbLaunch: 'Select EkkoStudio in the M5 factory menu. Startup, chat, and voice still need to be checked on the device.', usbResultUnknown: 'The device result is not confirmed. Keep it connected and check the update and device before attempting another flash.', usbBackup: 'Private full backup on this server', usbAppCheck: 'Application verification', usbRegionsCheck: 'Factory and settings verification', usbYes: 'Complete', usbNotYet: 'Unconfirmed', usbConfirmSafety: 'Only the Ekko application at 0x10000 will be written. A private full backup is saved on this server first; factory firmware and settings are verified as preserved. Interruption does not trigger automatic rollback. Cancellation is unavailable after writing begins. Continue?', usbCancelFailed: 'Cancellation result is unknown. Refresh update status.',
+    usbPhases: { queued: 'Queued', opening: 'Opening device', checking: 'Checking device and layout', 'backing-up': 'Backing up', writing: 'Writing', verifying: 'Verifying readback', restarting: 'Resetting', completed: 'Update ended', failed: 'Update failed', cancelled: 'Update cancelled' },
+    usbRecheck: 'Recheck and scan again', usbRechecking: 'Awaiting recheck…', usbRecheckSafety: 'The previous device result is still unknown. Check the device and data cable, confirm that the private backup is retained, and follow the guide to put the M5 into G0 download mode. This only rescans; it does not resume or retry the old update. Flashing requires another confirmation, and an unconfirmed USB-close lock is not bypassed. Recheck and scan again?', usbPreviousUnknown: 'The previous result remains unknown. You explicitly chose to recheck it. The private backup is retained; rescanning or flashing again does not prove that the previous result was correct.', usbDuration: 'Full backup, writing, and readback may take around 30 minutes. Pausing page queries or closing this page does not stop the server task. Reopen and refresh update status to check it.', usbPortExpiry: 'Scan results are valid for two minutes. Scan again after they expire.',
     version: 'Version', file: 'File', bytes: 'bytes', size: 'File size', offset: 'Flash offset', partition: 'Application partition size', hash: 'SHA-256', downloadUrl: 'Fixed public download URL', sourceUrl: 'Source URL', releaseUrl: 'Release page URL',
     draft: 'Development preview; the Release is not public. The firmware URL below is pinned to a public source commit.', sourceBundled: 'Corresponding source is included in the plugin package', sourcePath: 'Bundled source file', sourceHash: 'Source SHA-256', sourceDownload: 'Source download URL',
     expiryRecovery: 'Token expiry recovery', restartRecovery: 'Studio restart recovery', physicalAgents: 'Agents exercised on hardware', autoStopObserved: 'Automatic-stop log on this version', verified: 'Verified', pending: 'Pending', testsPaused: 'Further hardware tests are paused at the user’s request; unfinished checks remain pending.',
@@ -64,6 +70,7 @@ const css = `
 .adv-form{display:grid;gap:20px;max-width:680px;margin-top:22px}.adv-field{display:grid;gap:7px;min-width:0}.adv-field label{display:grid;gap:7px;font-weight:600}.adv-field small{color:var(--text-secondary);line-height:1.5}.adv-input{min-width:0;width:100%;min-height:var(--control-height,38px);padding:9px 11px;background:var(--theme-input-bg,var(--bg-input));border:var(--border-width,1px) solid var(--theme-input-border,var(--border-color));border-radius:var(--theme-input-radius,var(--radius-component,6px));box-shadow:var(--theme-input-shadow,none);backdrop-filter:var(--theme-input-filter,none)}.adv-status{margin-top:12px!important;overflow-wrap:anywhere}.adv-status[data-level=error]{color:var(--error)}.adv-status[data-level=success]{color:var(--success)}.adv-status[data-level=info]{color:var(--text-secondary)}
 .adv-copy{margin-top:14px}.adv-copy label{display:block;font-weight:600}.adv-copy-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:start;margin-top:7px}.adv-copy textarea{resize:vertical;min-height:44px;line-height:1.5;font-weight:400;font-size:.91em;overflow-wrap:anywhere;word-break:break-all}.adv-callout{border-left:3px solid var(--warning);padding:12px 16px;background:var(--theme-overlay-bg,var(--bg-secondary));border-radius:0 var(--theme-overlay-radius,var(--radius-component,6px)) var(--theme-overlay-radius,var(--radius-component,6px)) 0;box-shadow:var(--theme-overlay-shadow,none);backdrop-filter:var(--theme-overlay-filter,none);margin:18px 0}.adv-callout strong{display:block;margin-bottom:4px}.adv-callout p{color:var(--text-secondary)}
 .adv-firmware{background:var(--theme-card-bg,var(--bg-card));border:var(--border-width,1px) solid var(--theme-card-border,var(--border-color));border-radius:var(--theme-card-radius,var(--radius-component,6px));box-shadow:var(--theme-card-shadow,none);backdrop-filter:var(--theme-card-filter,none);padding:20px;margin-top:20px}.adv dl{display:grid;grid-template-columns:minmax(110px,170px) minmax(0,1fr);gap:10px 18px;margin:18px 0}.adv dt{color:var(--text-muted)}.adv dd{margin:0;overflow-wrap:anywhere}.adv-version{font-size:17px;font-weight:650;overflow-wrap:anywhere}.adv ol{padding-left:23px}.adv li+li{margin-top:12px}.adv kbd{display:inline-block;padding:3px 7px;border:1px solid var(--theme-input-border,var(--border-color));border-bottom-width:2px;border-radius:4px;background:var(--theme-input-bg,var(--bg-input));font:inherit;font-size:.9em;color:var(--text-primary)}.adv-empty{padding:28px 0}.adv-empty h3{margin-bottom:8px}.adv-loading{padding:28px 0;color:var(--text-secondary)}.adv-pulse{display:inline-block;width:8px;height:8px;background:var(--accent-primary);margin-right:9px;animation:adv-pulse 1.3s ease-in-out infinite}@keyframes adv-pulse{50%{opacity:.25}}@media(prefers-reduced-motion:reduce){.adv-pulse{animation:none}}
+.adv-usb{margin-top:24px;padding:24px 0;border-top:1px solid var(--border-light,var(--border-color))}.adv-usb-confirm{display:flex!important;align-items:flex-start;gap:10px;font-weight:400!important}.adv-usb-confirm input{flex:none;margin-top:5px}.adv-usb progress{display:block;width:100%;max-width:680px;height:12px;margin-top:16px;accent-color:var(--accent-primary)}.adv-usb-job{overflow-wrap:anywhere}.adv-usb-host{font-size:.9em;color:var(--text-muted)}
 @media(max-width:620px){.adv{padding-top:20px}.adv dl{grid-template-columns:1fr;gap:3px}.adv dd{margin-bottom:10px}.adv-firmware{padding:15px}.adv-copy-row{grid-template-columns:minmax(0,1fr)}.adv-copy-row button{justify-self:start}.adv-keys{grid-template-columns:120px minmax(0,1fr)!important;gap:15px!important}.adv table,.adv tbody{display:block}.adv thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.adv tbody tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px 16px;padding:16px 0;border-bottom:1px solid var(--border-light,var(--border-color))}.adv td{display:grid;gap:4px;padding:0;border:0;min-width:0}.adv td:first-child{grid-column:1/-1;min-width:0;max-width:none}.adv td:before{content:attr(data-label);font-size:.84em;color:var(--text-muted)}}
 `
 
@@ -77,6 +84,7 @@ export async function mount(root, ctx) {
   const pageRemovers = new Set()
   let bindingRemovers = []
   let pagePhase = false
+  let stopUsb = () => {}
   const el = (tag, text, className) => {
     const node = doc.createElement(tag)
     if (text !== undefined) node.textContent = text
@@ -104,6 +112,7 @@ export async function mount(root, ctx) {
     if (!alive) return
     alive = false
     generation++
+    stopUsb()
     for (const remove of [...removers, ...pageRemovers]) remove()
     bindingRemovers = []
     scope.remove()
@@ -306,7 +315,248 @@ export async function mount(root, ctx) {
     settingsForm(top, listing.devices, settings, false)
     binding(settings)
   }
-  function renderFirmware(overview) {
+  async function renderUsb(overview, parent) {
+    const request = generation
+    const panel = el('section', undefined, 'adv-usb')
+    panel.append(el('h3', t.usbTitle))
+    parent.append(panel)
+    panel.append(el('p', t.usbHostHint, 'adv-note'), el('p', t.usbDuration, 'adv-note'))
+    const host = el('p', '', 'adv-usb-host')
+    panel.append(host)
+    const form = el('div', undefined, 'adv-form')
+    const field = el('div', undefined, 'adv-field'), portLabel = el('label', t.usbPort)
+    const ports = el('select', undefined, 'adv-input')
+    ports.setAttribute('aria-label', t.usbPort)
+    portLabel.append(ports)
+    field.append(portLabel, el('small', t.usbPortExpiry))
+    const boardLabel = el('label', undefined, 'adv-usb-confirm')
+    const board = el('input')
+    board.type = 'checkbox'
+    boardLabel.append(board, doc.createTextNode(t.usbBoard))
+    form.append(field, boardLabel)
+    const actions = el('div', undefined, 'adv-actions')
+    const scan = button(t.usbScan, scanPorts)
+    const start = button(t.usbStart, startUpdate, true)
+    const refresh = button(t.usbRefresh, () => refreshInfo(true))
+    const cancel = button(t.usbCancel, cancelUpdate)
+    const recheck = button(t.usbRecheck, recheckAndScan)
+    actions.append(scan, start, refresh, cancel, recheck)
+    form.append(actions)
+    panel.append(form)
+    const notice = status(panel, t.usbChecking)
+    const previousUnknown = status(panel)
+    previousUnknown.hidden = true
+    const progress = el('progress')
+    progress.max = 100
+    progress.value = 0
+    progress.setAttribute('aria-label', t.usbProgress)
+    const details = el('div', undefined, 'adv-usb-job')
+    panel.append(progress, details, el('p', t.usbCloseHint, 'adv-note'))
+    let info = null, job = null, busy = false, unknown = false, checking = true
+    let reviewedUnknownJobId = ''
+    let selectedPorts = [], timer = null, stopped = false, pollEpoch = 0, polls = 0, deadline = 0
+    const current = () => alive && !stopped && request === generation
+    const terminal = () => job && ['completed', 'failed', 'cancelled'].includes(job.phase)
+    const active = () => job && !terminal()
+    const stopPolling = () => { clearTimeout(timer); timer = null; ++pollEpoch }
+    stopUsb = () => { stopped = true; stopPolling() }
+    const message = (text, level = 'info') => {
+      notice.textContent = text
+      notice.dataset.level = level
+      notice.setAttribute('role', level === 'error' ? 'alert' : 'status')
+    }
+    function controls() {
+      const needsReview = job?.resultUnknown === true && reviewedUnknownJobId !== job.id
+      const locked = busy || checking || active() || unknown || needsReview
+      scan.disabled = locked || info?.available !== true
+      ports.disabled = locked || !selectedPorts.length || info?.available !== true
+      board.disabled = locked || info?.available !== true
+      start.disabled = locked || info?.available !== true || !board.checked || !selectedPorts.some(port => port.id === ports.value)
+      refresh.disabled = busy || checking
+      cancel.disabled = busy || checking || !active() || job.canCancel !== true
+      recheck.hidden = job?.resultUnknown !== true
+      recheck.disabled = busy || checking || unknown || !terminal() || job.resultUnknown !== true || info?.available !== true
+    }
+    function renderJob() {
+      details.replaceChildren()
+      progress.hidden = !job
+      if (!job) return
+      const percent = Math.max(0, Math.min(100, Number.isFinite(job.progress) ? job.progress : 0))
+      progress.value = percent
+      const heading = `${t.usbPhases[job.phase] ?? job.phase} · ${percent}%`
+      details.append(el('p', heading, 'adv-status'))
+      if (job.message) details.append(el('p', job.message, 'adv-note'))
+      const checks = el('dl')
+      for (const [key, label] of [['backupSaved', t.usbBackup], ['applicationVerified', t.usbAppCheck], ['preservedRegionsVerified', t.usbRegionsCheck]]) {
+        checks.append(el('dt', label), el('dd', job[key] === true ? t.usbYes : t.usbNotYet))
+      }
+      details.append(checks)
+      if (job.resultUnknown === true) message(t.usbResultUnknown, 'error')
+      else if (job.phase === 'completed') {
+        const verified = job.backupSaved === true && job.applicationVerified === true && job.preservedRegionsVerified === true
+        message(verified ? t.usbComplete : t.usbNeedsCheck, verified ? 'success' : 'error')
+        details.append(el('p', t.usbLaunch, 'adv-note'))
+      } else if (job.phase === 'failed') message(`${t.usbPhases.failed}${job.errorCode ? ` · ${job.errorCode}` : ''}`, 'error')
+      else if (job.phase === 'cancelled') message(t.usbPhases.cancelled)
+      else if (info?.available === true) message('')
+    }
+    function setPorts(list) {
+      const previous = ports.value
+      selectedPorts = list
+      ports.replaceChildren()
+      const empty = el('option', t.usbChoose)
+      empty.value = ''
+      ports.append(empty)
+      for (const port of list) {
+        const option = el('option', port.label)
+        option.value = port.id
+        ports.append(option)
+      }
+      ports.value = list.some(port => port.id === previous) ? previous : ''
+    }
+    function observe(resetBudget = false) {
+      stopPolling()
+      if (!current() || !active()) return
+      if (resetBudget) { deadline = Date.now() + 10 * 60_000; polls = 0 }
+      if (polls >= 300 || Date.now() >= deadline) { message(t.usbPollPaused); return }
+      const epoch = pollEpoch
+      timer = setTimeout(async () => {
+        timer = null
+        if (!current() || epoch !== pollEpoch || !active()) return
+        if (Date.now() >= deadline) { message(t.usbPollPaused); return }
+        const id = job.id
+        try {
+          ++polls
+          const next = await ctx.rpc.call('usb-update-status', { jobId: id })
+          if (!current() || epoch !== pollEpoch || job?.id !== id) return
+          job = next
+          renderJob()
+          controls()
+          observe()
+        } catch (error) {
+          if (!current() || epoch !== pollEpoch) return
+          message(`${t.usbPollPaused} ${rpcErrorMessage(error)}`, 'error')
+        }
+      }, 2000)
+    }
+    async function refreshInfo(explicit = false) {
+      if (!current() || busy) return
+      stopPolling()
+      checking = true
+      refresh.textContent = t.usbRefreshing
+      controls()
+      try {
+        const next = await ctx.rpc.call('usb-info', null)
+        if (!current()) return
+        info = next
+        job = info.currentJob ?? null
+        unknown = false
+        host.textContent = `${t.usbPlatform}: ${info.hostPlatform}`
+        message(info.available === true ? (explicit && !job ? t.usbNoJob : '') : `${t.usbUnavailable}${info.reason ? ` ${info.reason}` : ''}`, info.available === true ? 'info' : 'error')
+        renderJob()
+        observe(true)
+      } catch (error) {
+        if (current()) message(`${rpcErrorMessage(error)}${unknown ? ` ${t.usbUnknown}` : ''}`, 'error')
+      } finally {
+        if (current()) { checking = false; refresh.textContent = t.usbRefresh; controls() }
+      }
+    }
+    async function scanPorts() {
+      if (!current() || scan.disabled || busy) return
+      busy = true
+      scan.textContent = t.usbScanning
+      controls()
+      try {
+        await readPorts()
+      } catch (error) {
+        if (current()) { setPorts([]); message(rpcErrorMessage(error), 'error') }
+      } finally {
+        if (current()) { busy = false; scan.textContent = t.usbScan; controls() }
+      }
+    }
+    async function readPorts() {
+      const response = await ctx.rpc.call('usb-list-ports', null)
+      if (!current()) return
+      setPorts(response.ports)
+      if (job?.resultUnknown === true) renderJob()
+      else message(response.ports.length ? '' : t.usbNoPorts)
+      if (!response.ports.length && job?.resultUnknown === true) message(`${t.usbResultUnknown} ${t.usbNoPorts}`, 'error')
+    }
+    async function recheckAndScan() {
+      if (!current() || recheck.disabled || busy) return
+      busy = true
+      recheck.textContent = t.usbRechecking
+      controls()
+      try {
+        const reviewedId = job.id
+        const confirmed = await ctx.ui.confirm(t.usbRecheckSafety)
+        if (!current() || !confirmed || job.id !== reviewedId) return
+        reviewedUnknownJobId = reviewedId
+        board.checked = false
+        setPorts([])
+        previousUnknown.hidden = false
+        previousUnknown.textContent = t.usbPreviousUnknown
+        recheck.textContent = t.usbScanning
+        await readPorts()
+      } catch (error) {
+        if (current()) { setPorts([]); message(`${t.usbResultUnknown} ${rpcErrorMessage(error)}`, 'error') }
+      } finally {
+        if (current()) { busy = false; recheck.textContent = t.usbRecheck; controls() }
+      }
+    }
+    async function startUpdate() {
+      if (!current() || start.disabled || busy) return
+      busy = true
+      start.textContent = t.usbConfirming
+      controls()
+      const file = overview.firmware.files[0]
+      let submitted = false
+      try {
+        const confirmed = await ctx.ui.confirm(`${t.title}\n${t.version}: ${overview.firmware.version}\n${t.hash}: ${file.sha256}\n\n${t.usbConfirmSafety}`)
+        if (!current() || !confirmed) return
+        const input = { portId: ports.value, requestId: globalThis.crypto.randomUUID(), firmwareSha256: file.sha256, boardConfirmed: true }
+        submitted = true
+        start.textContent = t.usbSubmitting
+        message(t.usbSubmitting)
+        const next = await ctx.rpc.call('usb-start-update', input)
+        if (!current()) return
+        job = next
+        unknown = false
+        renderJob()
+        observe(true)
+      } catch (error) {
+        if (!current()) return
+        unknown = submitted
+        message(`${submitted ? `${t.usbUnknown} ` : ''}${rpcErrorMessage(error)}`, 'error')
+      } finally {
+        if (current()) { busy = false; start.textContent = t.usbStart; controls() }
+      }
+    }
+    async function cancelUpdate() {
+      if (!current() || cancel.disabled || busy) return
+      busy = true
+      cancel.textContent = t.usbCancelling
+      stopPolling()
+      controls()
+      try {
+        const next = await ctx.rpc.call('usb-cancel-update', { jobId: job.id })
+        if (!current()) return
+        job = next
+        renderJob()
+        observe(true)
+      } catch (error) {
+        if (current()) message(`${t.usbCancelFailed} ${rpcErrorMessage(error)}`, 'error')
+      } finally {
+        if (current()) { busy = false; cancel.textContent = t.usbCancel; controls() }
+      }
+    }
+    setPorts([])
+    listen(ports, 'change', controls)
+    listen(board, 'change', controls)
+    controls()
+    await refreshInfo()
+  }
+  async function renderFirmware(overview) {
     const top = section(t.validatedFirmware)
     const caution = el('div', undefined, 'adv-callout')
     caution.append(el('strong', t.existingOnly), el('p', t.noFirstFlash))
@@ -314,6 +564,7 @@ export async function mount(root, ctx) {
     const fw = overview.firmware
     top.append(el('p', fw.version, 'adv-version'))
     if (fw.publication === 'draft') top.append(el('p', t.draft, 'adv-note'))
+    const usbReady = renderUsb(overview, top)
     for (const file of fw.files) {
       const pane = el('article', undefined, 'adv-firmware')
       pane.append(el('h3', file.path))
@@ -345,6 +596,7 @@ export async function mount(root, ctx) {
     if (!overview.pluginSdk.firmwareOnThisHostPhysicallyValidated) validation.append(el('p', t.notValidated, 'adv-note'))
     if (!fw.validation.allAgentsPhysicallyValidated) validation.append(el('p', t.agentNotValidated, 'adv-note'))
     if (!fw.validation.fullMatrixComplete) validation.append(el('p', t.matrixIncomplete, 'adv-note'))
+    await usbReady
   }
   function renderGuide(overview) {
     content.append(el('p', t.guideIntro, 'adv-note'))
@@ -368,6 +620,7 @@ export async function mount(root, ctx) {
   async function load() {
     if (!alive) return
     const request = ++generation
+    stopUsb()
     for (const remove of [...pageRemovers]) remove()
     bindingRemovers = []
     content.replaceChildren()
@@ -381,7 +634,7 @@ export async function mount(root, ctx) {
         if (!alive || request !== generation) return
         content.replaceChildren()
         if (ctx.view === 'guide') renderGuide(overview)
-        else renderFirmware(overview)
+        else await renderFirmware(overview)
       } else {
         const [listing, settings] = await Promise.all([ctx.rpc.call('list-devices', null), ctx.rpc.call('get-settings', null)])
         if (!alive || request !== generation) return

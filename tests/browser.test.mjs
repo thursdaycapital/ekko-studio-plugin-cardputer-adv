@@ -19,8 +19,11 @@ function fixture() {
     const root = document.getElementById('root');
     let controller, dispose;
     const state = {
-      calls: [], navigations: [], failures: {}, pending: {}, holds: [],
+      calls: [], navigations: [], failures: {}, pending: {}, holds: [], confirmations: [], confirmResult: true, holdConfirm: false,
       overview: structuredClone(fixture.overview),
+      usbInfo: {available:true,reason:'',hostPlatform:'fixture-server'},
+      usbPorts: [{id:'opaque-fixture-port',label:'Fixture USB <img src=x onerror=alert(1)>',vendorId:'303a',productId:'1001'}],
+      usbJob: {id:'fixture-job-1',phase:'queued',progress:0,message:'Fixture update',createdAt:1,updatedAt:2,canCancel:true,backupSaved:false,applicationVerified:false,preservedRegionsVerified:false,resetConfirmed:false,resultUnknown:false,errorCode:''},
       settings: {deviceOrigin:'', preferredDeviceId:''},
       listing: {devices:[{id:'fixture-01',name:'Test MCU <img src=x onerror=alert(1)>',codeSuffix:'a1b2c3',lanConnected:true,desktopRelayConnected:false,official:false}],modelVerified:false},
       async open(view, locale='zh-CN') {
@@ -39,13 +42,18 @@ function fixture() {
             if(name==='get-overview') return structuredClone(state.overview);
             if(name==='list-devices') return structuredClone(state.listing);
             if(name==='get-settings') return structuredClone(state.settings);
+            if(name==='usb-info') return structuredClone(state.usbInfo);
+            if(name==='usb-list-ports') return {ports:structuredClone(state.usbPorts)};
+            if(name==='usb-start-update') {state.usbInfo.currentJob=structuredClone(state.usbJob);return structuredClone(state.usbJob)}
+            if(name==='usb-update-status') return structuredClone(state.usbInfo.currentJob);
+            if(name==='usb-cancel-update') {state.usbInfo.currentJob={...state.usbInfo.currentJob,phase:'cancelled',canCancel:false};return structuredClone(state.usbInfo.currentJob)}
             if(name==='save-settings') {
               state.settings={...input,deviceOrigin:input.deviceOrigin?new URL(input.deviceOrigin).origin:''};
               return {ok:true};
             }
             throw new Error('Unexpected RPC '+name);
           }},
-          ui:{navigate(value){state.navigations.push(value)},notify(){throw new Error('Unexpected notification')}}
+          ui:{navigate(value){state.navigations.push(value)},notify(){throw new Error('Unexpected notification')},async confirm(message){state.confirmations.push(message);return state.holdConfirm?await new Promise(resolve=>state.pendingConfirm=resolve):state.confirmResult}}
         };
         const result = await module.mount(root,ctx);
         if(current===controller) dispose=result;
@@ -53,6 +61,7 @@ function fixture() {
       },
       abort(){controller.abort()},
       release(name){state.holds=state.holds.filter(n=>n!==name);state.pending[name]?.();delete state.pending[name]},
+      releaseConfirm(answer){state.holdConfirm=false;state.pendingConfirm?.(answer);delete state.pendingConfirm},
     };
     window.__test=state;
     window.__ready=await state.open('devices');
@@ -80,6 +89,7 @@ before(async () => {
 after(async () => {
   if (browser) await browser.close()
   if (server) await new Promise(resolve => server.close(resolve))
+  assert.deepEqual(consoles, [], 'plugin sandbox must not emit uncaught page errors')
 })
 
 async function pageFixture() {
@@ -264,6 +274,154 @@ test('empty list, load failure and retry are visible; disposal ignores late RPC 
     assert.equal(await frame.locator('#root').innerHTML(), '')
     await frame.evaluate(() => __test.open('devices'))
     assert.equal(await frame.getByText('还没有登记设备', { exact: true }).isVisible(), true)
+    assert.deepEqual(consoles, [])
+  } finally { await page.close() }
+})
+
+async function prepareUsb(frame) {
+  // Bring the USB section into the nested iframe viewport before pointer input.
+  await frame.locator('.adv-usb').evaluate(node => node.scrollIntoView({ block: 'start' }))
+  await frame.getByRole('button', { name: '扫描 USB 设备', exact: true }).click()
+  await frame.waitForFunction(() => __test.calls.some(call => call.name === 'usb-list-ports'))
+  await frame.getByRole('combobox', { name: 'USB 设备', exact: true }).selectOption('opaque-fixture-port')
+  await frame.getByRole('checkbox').check()
+}
+
+test('USB uses explicit scan, server-side wording and SDK confirmation; rejecting confirmation starts nothing', async () => {
+  const { page, frame } = await pageFixture()
+  try {
+    await frame.evaluate(() => __test.open('firmware'))
+    const initial = await frame.evaluate(() => __test.calls.filter(call => call.name.startsWith('usb-')))
+    assert.deepEqual(initial, [{ name: 'usb-info', input: null }])
+    assert.match(await frame.locator('.adv-usb').innerText(), /数据线须插到运行 Studio 服务端/)
+    assert.match(await frame.locator('.adv-usb').innerText(), /NAS／远程网页/)
+    const start = frame.locator('.adv-usb .adv-primary')
+    assert.equal(await start.isDisabled(), true)
+    await prepareUsb(frame)
+    assert.equal(await frame.locator('.adv-usb select option img').count(), 0)
+    await frame.evaluate(() => { __test.confirmResult=false })
+    await start.click()
+    await frame.waitForFunction(() => __test.confirmations.length === 1)
+    const confirmation = await frame.evaluate(() => __test.confirmations[0])
+    assert.match(confirmation, /SHA-256: [a-f0-9]{64}/)
+    assert.match(confirmation, /0x10000/)
+    assert.match(confirmation, /中断不会自动回滚/)
+    assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-start-update').length), 0)
+    assert.equal(await start.isEnabled(), true)
+    await page.setViewportSize({ width: 360, height: 780 })
+    assert.equal(await frame.evaluate(() => document.documentElement.scrollWidth > innerWidth), false)
+    await screenshot(page, 'usb-confirmation-fixture-sandbox.png')
+  } finally { await page.close() }
+})
+
+test('USB prevents duplicate submission and restores the submitted update after leaving and remounting', async () => {
+  const { page, frame } = await pageFixture()
+  try {
+    await frame.evaluate(() => __test.open('firmware'))
+    await prepareUsb(frame)
+    await frame.evaluate(() => { __test.holdConfirm=true })
+    const start = frame.locator('.adv-usb .adv-primary')
+    await start.click()
+    await start.evaluate(node => node.dispatchEvent(new Event('click')))
+    assert.equal(await frame.evaluate(() => __test.confirmations.length), 1)
+    await frame.evaluate(() => { __test.holds.push('usb-start-update'); __test.releaseConfirm(true) })
+    await frame.waitForFunction(() => __test.calls.some(call => call.name==='usb-start-update'))
+    await start.evaluate(node => node.dispatchEvent(new Event('click')))
+    assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-start-update').length), 1)
+    const input = await frame.evaluate(() => __test.calls.find(call => call.name==='usb-start-update').input)
+    assert.equal(input.portId, 'opaque-fixture-port')
+    assert.match(input.requestId, /^[\da-f]{8}-(?:[\da-f]{4}-){3}[\da-f]{12}$/i)
+    assert.equal(input.firmwareSha256, overview.firmware.files[0].sha256)
+    assert.equal(input.boardConfirmed, true)
+    // The accepted host task survives the old iframe lifecycle, even when its reply was pending.
+    await frame.evaluate(() => { __test.usbInfo.currentJob={...__test.usbJob,phase:'writing',progress:45,backupSaved:true,canCancel:false}; __test.abort(); __test.release('usb-start-update') })
+    await frame.waitForFunction(() => document.getElementById('root').childElementCount === 0)
+    await frame.evaluate(() => __test.open('guide'))
+    await frame.evaluate(() => { __test.usbInfo.currentJob={...__test.usbJob,phase:'writing',progress:45,backupSaved:true,canCancel:false}; return __test.open('firmware') })
+    assert.match(await frame.locator('.adv-usb').innerText(), /正在写入 · 45%/)
+    assert.equal(await frame.locator('.adv-usb .adv-primary').isDisabled(), true)
+    assert.equal(await frame.getByRole('button', { name: '扫描 USB 设备', exact: true }).isDisabled(), true)
+    assert.equal(await frame.getByRole('button', { name: '取消任务', exact: true }).isDisabled(), true)
+    assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-start-update').length), 1)
+    assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-cancel-update').length), 0)
+  } finally { await page.close() }
+})
+
+test('USB unknown submission requires explicit status lookup and never automatically resubmits', async () => {
+  const { page, frame } = await pageFixture()
+  try {
+    await frame.evaluate(() => __test.open('firmware'))
+    await prepareUsb(frame)
+    await frame.evaluate(() => { __test.failures['usb-start-update']='API Error 503: Fixture reply lost' })
+    await frame.locator('.adv-usb .adv-primary').click()
+    await frame.getByRole('alert').filter({ hasText: '提交结果未确认' }).waitFor()
+    assert.doesNotMatch(await frame.locator('.adv-usb').innerText(), /API Error 503:/)
+    assert.equal(await frame.locator('.adv-usb .adv-primary').isDisabled(), true)
+    await frame.locator('.adv-usb .adv-primary').evaluate(node => node.dispatchEvent(new Event('click')))
+    assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-start-update').length), 1)
+    await frame.evaluate(() => { delete __test.failures['usb-start-update']; __test.usbInfo.currentJob={...__test.usbJob,phase:'checking'} })
+    await frame.getByRole('button', { name: '刷新任务状态', exact: true }).click()
+    await frame.getByText('正在检查设备和布局 · 0%', { exact: true }).waitFor()
+    assert.equal(await frame.locator('.adv-usb .adv-primary').isDisabled(), true)
+    assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-start-update').length), 1)
+    // Only the host's safe-stage cancellation is exposed.
+    await frame.getByRole('button', { name: '取消任务', exact: true }).click()
+    await frame.getByText('任务已取消', { exact: true }).waitFor()
+    assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-cancel-update').length), 1)
+  } finally { await page.close() }
+})
+
+test('USB polling stops after disposal and reports verified completion without claiming hardware acceptance', async () => {
+  const { page, frame } = await pageFixture()
+  try {
+    await page.clock.install()
+    await frame.evaluate(() => { __test.usbInfo.currentJob={...__test.usbJob,phase:'writing',canCancel:false}; return __test.open('firmware') })
+    await frame.evaluate(() => __test.abort())
+    await page.clock.runFor(5000)
+    assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-update-status').length), 0)
+    assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-cancel-update').length), 0)
+    await frame.evaluate(() => { __test.usbInfo.currentJob={...__test.usbJob,phase:'verifying',canCancel:false,progress:90}; return __test.open('firmware','en-US') })
+    await frame.evaluate(() => { __test.usbInfo.currentJob={...__test.usbJob,phase:'completed',canCancel:false,progress:100,backupSaved:true,applicationVerified:true,preservedRegionsVerified:true,resetConfirmed:true} })
+    await page.clock.runFor(2100)
+    await frame.getByText('Application and preserved-region verification passed.', { exact: true }).waitFor()
+    assert.match(await frame.locator('.adv-usb').innerText(), /Startup, chat, and voice still need to be checked on the device/)
+    const count = await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-update-status').length)
+    await page.clock.runFor(5000)
+    assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-update-status').length), count)
+  } finally { await page.close() }
+})
+
+test('USB unknown-result recovery only rescans after explicit review and still needs a new flash confirmation', async () => {
+  const { page, frame } = await pageFixture()
+  try {
+    await frame.evaluate(() => { __test.usbInfo.currentJob={...__test.usbJob,phase:'failed',resultUnknown:true,backupSaved:true,errorCode:'USB_VERIFY_FAILED'}; return __test.open('firmware') })
+    await frame.locator('.adv-usb').evaluate(node => node.scrollIntoView({ block: 'start' }))
+    assert.equal(await frame.locator('.adv-usb .adv-primary').isDisabled(), true)
+    assert.match(await frame.locator('.adv-usb').innerText(), /约 30 分钟/)
+    const recheck = frame.getByRole('button', { name: '重新核对并扫描', exact: true })
+    await frame.evaluate(() => { __test.confirmResult=false })
+    await recheck.click()
+    assert.equal(await frame.evaluate(() => __test.calls.some(call => call.name==='usb-list-ports')), false)
+    assert.match(await frame.evaluate(() => __test.confirmations[0]), /G0 下载模式/)
+    await frame.evaluate(() => { __test.confirmResult=true })
+    await recheck.click()
+    assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-list-ports').length), 1)
+    assert.equal(await frame.getByRole('combobox', { name: 'USB 设备', exact: true }).inputValue(), '')
+    assert.equal(await frame.getByRole('checkbox').isChecked(), false)
+    assert.equal(await frame.locator('.adv-usb .adv-primary').isDisabled(), true)
+    assert.match(await frame.locator('.adv-usb').innerText(), /上次更新结果仍未知/)
+    await frame.getByRole('combobox', { name: 'USB 设备', exact: true }).selectOption('opaque-fixture-port')
+    await frame.getByRole('checkbox').check()
+    await frame.locator('.adv-usb .adv-primary').click()
+    assert.equal(await frame.evaluate(() => __test.confirmations.length), 3)
+    assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-start-update').length), 1)
+    assert.match(await frame.locator('.adv-usb').innerText(), /上次更新结果仍未知/)
+    await frame.evaluate(() => { __test.usbInfo.currentJob={...__test.usbJob,phase:'failed',resultUnknown:true,errorCode:'USB_CLOSE_UNCONFIRMED'}; return __test.open('firmware','en-US') })
+    await frame.locator('.adv-usb').evaluate(node => node.scrollIntoView({ block: 'start' }))
+    await frame.getByRole('button', { name: 'Recheck and scan again', exact: true }).click()
+    assert.match(await frame.locator('.adv-usb').innerText(), /previous result remains unknown/)
+    assert.match(await frame.locator('.adv-usb').innerText(), /Scan results are valid for two minutes/)
+    assert.match(await frame.evaluate(() => __test.confirmations.at(-1)), /not bypassed/)
     assert.deepEqual(consoles, [])
   } finally { await page.close() }
 })

@@ -1,6 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
+import { AsyncLocalStorage } from 'node:async_hooks'
 import { mkdtemp, mkdir, readFile, writeFile, rm, symlink } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
@@ -115,18 +116,69 @@ test('cancellation during asynchronous host/read work blocks returning stale dat
 
 test('apply/dispose is idempotent, duplicate apply preserves existing registration, partial registration rolls back', async () => {
   const s = setup(); const dispose = apply(s.ctx)
-  assert.equal(s.methods.size, 4)
+  assert.equal(s.methods.size, 9)
   assert.throws(() => apply(s.ctx), /duplicate/)
-  assert.equal(s.methods.size, 4)
+  assert.equal(s.methods.size, 9)
   const captured = s.methods.get('save-settings')
   dispose(); dispose()
   assert.equal(s.methods.size, 0)
   await assert.rejects(captured(sample, { identity: { userId: 1, profile: 'default' }, signal: new AbortController().signal }), /释放/)
-  const disposeAgain = apply(s.ctx); assert.equal(s.methods.size, 4); disposeAgain()
+  const disposeAgain = apply(s.ctx); assert.equal(s.methods.size, 9); disposeAgain()
   const preexisting = () => null
   const partial = setup(new Map([['get-settings', preexisting]]))
   assert.throws(() => apply(partial.ctx), /duplicate/)
   assert.deepEqual([...partial.methods.entries()], [['get-settings', preexisting]])
+})
+
+test('lazy USB manager uses plugin lifetime rather than the dynamic official RPC signal', async () => {
+  const s = setup(), invocation = new AsyncLocalStorage(), plugin = new AbortController()
+  Object.defineProperty(s.ctx, 'signal', { get() { return invocation.getStore()?.signal ?? plugin.signal } })
+  s.ctx.paths = { dataDir: os.tmpdir() }
+  const dispose = apply(s.ctx)
+  const info = async () => {
+    const rpc = new AbortController()
+    try {
+      return await invocation.run({ signal: rpc.signal }, () => s.call('usb-info', null, {
+        identity: { userId: 1, profile: 'default', surface: 'ui' }, permissions: ['api.write'], signal: rpc.signal,
+      }))
+    } finally { rpc.abort() }
+  }
+  // Capability imports are real, but neither request scans or opens a device.
+  assert.equal(typeof (await info()).available, 'boolean')
+  assert.equal(typeof (await info()).available, 'boolean')
+  plugin.abort()
+  await assert.rejects(info(), /USB 更新组件不可用/)
+  await dispose()
+})
+
+test('dispose waits for all asynchronous SDK unregister functions and reports only a fixed failure', async () => {
+  const s = setup(), register = s.ctx.extensions.rpc.register
+  let release, completed = 0
+  const gate = new Promise(resolve => { release = resolve })
+  s.ctx.extensions.rpc.register = (name, handler) => {
+    const unregister = register(name, handler)
+    return async () => {
+      unregister()
+      await gate
+      completed++
+      if (name === 'get-settings') throw new Error('PRIVATE_NATIVE_CLEANUP_DETAIL')
+    }
+  }
+  const dispose = apply(s.ctx)
+  const stopped = dispose()
+  assert.equal(dispose(), stopped)
+  assert.equal(s.methods.size, 0)
+  let settled = false
+  const verified = assert.rejects(stopped, error => {
+    settled = true
+    assert.equal(error.message, '插件资源释放未能全部确认，请检查正在进行的USB作业')
+    return true
+  })
+  await Promise.resolve()
+  assert.equal(settled, false)
+  release()
+  await verified
+  assert.equal(completed, 9)
 })
 
 async function fixture(t) {

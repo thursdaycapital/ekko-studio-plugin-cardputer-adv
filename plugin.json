@@ -1,7 +1,7 @@
 {
   "id": "m5stack-cardputer-adv",
   "name": "M5Stack Cardputer-Adv",
-  "description": "M5Stack Cardputer-Adv 的局域网设备管理、固件校验与绑定指南。沿用 Studio 原生聊天和设备管理，不安装电脑补丁；附已有双固件布局的应用更新预览版。",
+  "description": "M5Stack Cardputer-Adv 原生设备管理与USB应用升级：写前私有备份、核对既有双固件布局，仅更新Ekko应用并读回校验。保留原厂与设置，不修改Studio核心。",
   "author": {
     "name": "thursdaycapital",
     "url": "https://github.com/thursdaycapital"
@@ -15,13 +15,14 @@
     "lan",
     "firmware"
   ],
-  "version": "0.2.0-alpha.6",
+  "version": "0.3.0-alpha.1",
   "apiVersion": 1,
   "server": "server.mjs",
   "client": "client.mjs",
   "permissions": [
     "ui",
-    "api.read"
+    "api.read",
+    "api.write"
   ],
   "views": [
     {

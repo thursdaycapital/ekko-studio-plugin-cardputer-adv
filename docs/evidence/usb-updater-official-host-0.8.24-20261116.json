@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-16",
+  "pluginVersion": "0.3.0-alpha.1",
+  "stage": "development-preview",
+  "host": {
+    "studioVersion": "0.8.24",
+    "nodePlatform": "darwin arm64 / Node v24.15.0",
+    "officialEntrySha256": "c04bfec6333a0e70d763ba93ec2fff7bf3f7b6241b6b75c4d5c1d57a571084e0",
+    "pluginEnabled": true,
+    "installedRuntimeMatchesSource": true,
+    "files": {
+      "plugin.json": "2aef5d83f424adfa3a0547fb608745158c06dce1f8696b2a9767dfc1038c9999",
+      "package.json": "7aea0940ca31537dd255bd2633a52f236427763088deafcb37e3d0c41893eb07",
+      "server.mjs": "aadf8c5389fee15b4096c6159b34b1aac5e5eb4071a88f318f6834c4ab864472",
+      "client.mjs": "89a84f9c4ae961197666637742f80190ec0693eb877ab9850dab0ac7fbcedd34",
+      "contracts/plugin.json": "a967155b475bfdacceaee6ce26885971c0d7f4128c0b8d2413bdbdda6bdc297e",
+      "lib/backend.mjs": "a723b0e2853de17392e5748c88a6aeab41ff59bba1544251a1ceb2c5678ec939",
+      "lib/contracts.mjs": "d4581bd590465a6e260d413f8b822448b1e371eff5110dfa117525f56686c9de",
+      "lib/usb-updater.mjs": "dc8a13f7cae2cc14d89aa83deeb4be66fc7a487487c4f2d635c3ec0e6a6f8771",
+      "lib/usb-serial.mjs": "6cea5e75f8980d89cfc388c462a2c2431b8427ad6dd597c4a7e5e9823a46ec18",
+      "lib/usb-identity.mjs": "c558da502506d4e12ea1b1615c2fff6d197b57482814203c58c0d5e80ba29d05",
+      "lib/usb-errors.mjs": "24125c2f83676065035bd4ed1740db20b04ec76de130c0ea58c532ead418f677"
+    }
+  },
+  "tests": {
+    "unitPassed": 106,
+    "unitFailed": 0,
+    "unitSkipped": 0,
+    "chromeSandboxPassed": 10,
+    "harnessPassed": true
+  },
+  "localIntegration": {
+    "views": [
+      {
+        "view": "/devices",
+        "loaded": true
+      },
+      {
+        "view": "/guide",
+        "loaded": true
+      },
+      {
+        "view": "/preferences",
+        "loaded": true
+      },
+      {
+        "view": "/firmware",
+        "loaded": true
+      }
+    ],
+    "scanStatus": 200,
+    "ports": 1,
+    "confirm": {
+      "version": true,
+      "sha": true,
+      "appOffset": true,
+      "backup": true
+    },
+    "startRequests": 0,
+    "errors": 0,
+    "rootSignalSurvivesRemount": true,
+    "independentInfoRequests": [
+      200,
+      200
+    ],
+    "settingsPreserved": true,
+    "corePatched": false
+  },
+  "physicalUsb": {
+    "startedViaOfficialUi": true,
+    "explicitUserApproval": true,
+    "startRequests": 1,
+    "startedAt": "2026-11-16T06:43:57.874Z",
+    "completedAt": "2026-11-16T06:46:04.236Z",
+    "durationMs": 126362,
+    "firmwareVersion": "cardputer-adv-v10.0.0-alpha.6",
+    "applicationOffset": "0x10000",
+    "applicationBytes": 3321072,
+    "applicationSha256": "9208e53b8336523b50a3d49ce5a18f559f9aa79a885bef6df2deaf201c930230",
+    "sameVersionReflash": true,
+    "backupBytes": 8388608,
+    "backupShaVerified": true,
+    "backupDirectoryMode": "0700",
+    "backupFileMode": "0600",
+    "partitionVerified": true,
+    "applicationVerified": true,
+    "preservedRegionsVerified": true,
+    "resetConfirmed": true,
+    "closeConfirmed": true,
+    "resultUnknown": false,
+    "errorCode": "",
+    "bootVideoAndAgentHomeUserConfirmed": true,
+    "afterBoot": {
+      "firmware": "cardputer-adv-v10.0.0-alpha.6",
+      "wifiConnected": true,
+      "uptimeMs": 317692,
+      "application": {
+        "revision": 10,
+        "connection": 4,
+        "page": 1,
+        "activation": 6,
+        "turn": 0,
+        "desired_mode": 1,
+        "active_mode": 0,
+        "review_phase": 3,
+        "wifi_joining": false,
+        "loop_longest_gap_ms": 58,
+        "connect_busy": false,
+        "connect_error": 0,
+        "connect_stack_free": 3676,
+        "auth_busy": false,
+        "auth_error": 255,
+        "auth_stage": 0,
+        "auth_stack_free": 0,
+        "auth_elapsed_ms": 0
+      }
+    },
+    "privateBackupPublished": false,
+    "rawLogsPublished": false
+  },
+  "limits": [
+    "Only one same-version Cardputer-Adv reflash on macOS arm64; other platforms not physically tested.",
+    "Requires existing exact 8MiB dual layout, unsigned and unencrypted target. No first-flash image or OTA.",
+    "No new chat or voice acceptance in this USB round; existing alpha6 results retain their original scope.",
+    "Remaining 16-Agent, Wi-Fi and power-loss matrix remains paused at user request.",
+    "In-memory jobs do not resume across Studio process restarts."
+  ]
+}

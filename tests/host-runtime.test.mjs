@@ -25,7 +25,7 @@ test('official installer + PluginRuntime load the release with caller-bound stat
   const installed = await installPackage(path.join(temp, 'installed'), projectRoot)
   t.after(installed.dispose)
   assert.equal(installed.manifest.id, 'm5stack-cardputer-adv')
-  assert.deepEqual([...installed.manifest.permissions].sort(), ['api.read', 'ui'])
+  assert.deepEqual([...installed.manifest.permissions].sort(), ['api.read', 'api.write', 'ui'])
   assert.equal(installed.manifest.views.length, 4)
   const activation = { userId: 100, profile: 'activation', surface: 'ui' }
   const caller = { userId: 7, profile: 'default', surface: 'ui' }

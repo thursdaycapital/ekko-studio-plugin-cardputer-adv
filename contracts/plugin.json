@@ -1267,6 +1267,340 @@
         "artifactVerified"
       ],
       "additionalProperties": false
+    },
+    "usbJob": {
+      "type": "object",
+      "description": "本次明确发起的应用升级作业摘要，不包含串口原文、私人备份路径或ROM MAC。",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "随机作业ID，只能由原调用用户及Profile查询。",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "phase": {
+          "type": "string",
+          "description": "真实作业阶段，完成仅指写入与保留区读回校验通过。",
+          "minLength": 1,
+          "maxLength": 32,
+          "enum": [
+            "queued",
+            "opening",
+            "checking",
+            "backing-up",
+            "writing",
+            "verifying",
+            "restarting",
+            "completed",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "progress": {
+          "type": "integer",
+          "description": "当前作业进度百分比，不能以百分比替代校验字段。",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "message": {
+          "type": "string",
+          "description": "有限的非敏感阶段说明或固定错误原因。",
+          "minLength": 0,
+          "maxLength": 360
+        },
+        "createdAt": {
+          "type": "integer",
+          "description": "创建UTC时间戳，毫秒。",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "updatedAt": {
+          "type": "integer",
+          "description": "最近更新UTC时间戳，毫秒。",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "canCancel": {
+          "type": "boolean",
+          "description": "是否可以显式请求取消；不能撤销已写入Flash。"
+        },
+        "backupSaved": {
+          "type": "boolean",
+          "description": "完整私有Flash备份是否已持久化并读取核对。"
+        },
+        "applicationVerified": {
+          "type": "boolean",
+          "description": "应用镜像段是否已从真实Flash读回核对。"
+        },
+        "preservedRegionsVerified": {
+          "type": "boolean",
+          "description": "启动配网前缀及原厂存储尾部是否与备份逐字节一致。"
+        },
+        "resetConfirmed": {
+          "type": "boolean",
+          "description": "是否明确完成复位请求，不代表原厂菜单或Ekko已实际启动。"
+        },
+        "resultUnknown": {
+          "type": "boolean",
+          "description": "取消、写入或清理中断后是否仍需用户核对设备结果。"
+        },
+        "errorCode": {
+          "type": "string",
+          "description": "固定错误代码；正常状态为空，不透传原始设备或系统错误。",
+          "minLength": 0,
+          "maxLength": 64
+        }
+      },
+      "required": [
+        "id",
+        "phase",
+        "progress",
+        "message",
+        "createdAt",
+        "updatedAt",
+        "canCancel",
+        "backupSaved",
+        "applicationVerified",
+        "preservedRegionsVerified",
+        "resetConfirmed",
+        "resultUnknown",
+        "errorCode"
+      ],
+      "additionalProperties": false
+    },
+    "usbInfo": {
+      "type": "object",
+      "description": "按需检查服务端USB依赖及当前调用者作业，不枚举或打开串口。",
+      "properties": {
+        "available": {
+          "type": "boolean",
+          "description": "真实加载依赖成功，不代表系统串口权限、设备或分区已核对。"
+        },
+        "reason": {
+          "type": "string",
+          "description": "不可用的有限公共原因，可用时为空。",
+          "minLength": 0,
+          "maxLength": 360
+        },
+        "hostPlatform": {
+          "type": "string",
+          "description": "运行Studio服务端的平台和运行时，不是浏览器电脑。",
+          "minLength": 0,
+          "maxLength": 128
+        },
+        "currentJob": {
+          "type": "object",
+          "description": "本次明确发起的应用升级作业摘要，不包含串口原文、私人备份路径或ROM MAC。",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "随机作业ID，只能由原调用用户及Profile查询。",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "phase": {
+              "type": "string",
+              "description": "真实作业阶段，完成仅指写入与保留区读回校验通过。",
+              "minLength": 1,
+              "maxLength": 32,
+              "enum": [
+                "queued",
+                "opening",
+                "checking",
+                "backing-up",
+                "writing",
+                "verifying",
+                "restarting",
+                "completed",
+                "failed",
+                "cancelled"
+              ]
+            },
+            "progress": {
+              "type": "integer",
+              "description": "当前作业进度百分比，不能以百分比替代校验字段。",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "message": {
+              "type": "string",
+              "description": "有限的非敏感阶段说明或固定错误原因。",
+              "minLength": 0,
+              "maxLength": 360
+            },
+            "createdAt": {
+              "type": "integer",
+              "description": "创建UTC时间戳，毫秒。",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "updatedAt": {
+              "type": "integer",
+              "description": "最近更新UTC时间戳，毫秒。",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "canCancel": {
+              "type": "boolean",
+              "description": "是否可以显式请求取消；不能撤销已写入Flash。"
+            },
+            "backupSaved": {
+              "type": "boolean",
+              "description": "完整私有Flash备份是否已持久化并读取核对。"
+            },
+            "applicationVerified": {
+              "type": "boolean",
+              "description": "应用镜像段是否已从真实Flash读回核对。"
+            },
+            "preservedRegionsVerified": {
+              "type": "boolean",
+              "description": "启动配网前缀及原厂存储尾部是否与备份逐字节一致。"
+            },
+            "resetConfirmed": {
+              "type": "boolean",
+              "description": "是否明确完成复位请求，不代表原厂菜单或Ekko已实际启动。"
+            },
+            "resultUnknown": {
+              "type": "boolean",
+              "description": "取消、写入或清理中断后是否仍需用户核对设备结果。"
+            },
+            "errorCode": {
+              "type": "string",
+              "description": "固定错误代码；正常状态为空，不透传原始设备或系统错误。",
+              "minLength": 0,
+              "maxLength": 64
+            }
+          },
+          "required": [
+            "id",
+            "phase",
+            "progress",
+            "message",
+            "createdAt",
+            "updatedAt",
+            "canCancel",
+            "backupSaved",
+            "applicationVerified",
+            "preservedRegionsVerified",
+            "resetConfirmed",
+            "resultUnknown",
+            "errorCode"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "available",
+        "reason",
+        "hostPlatform"
+      ],
+      "additionalProperties": false
+    },
+    "usbPorts": {
+      "type": "object",
+      "description": "用户明确点击扫描后返回的真实USB端口集合。",
+      "properties": {
+        "ports": {
+          "type": "array",
+          "description": "最多32个候选端口，不根据名称自动选择。",
+          "items": {
+            "type": "object",
+            "description": "由实际枚举产生的端口摘要，前端不提交本机路径。",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "两分钟选择缓存内的不可逆指纹ID。",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "label": {
+                "type": "string",
+                "description": "供用户选择的有限端口名称，不是板型证明。",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "vendorId": {
+                "type": "string",
+                "description": "可选来源USB厂商ID，缺少时为空。",
+                "minLength": 0,
+                "maxLength": 8
+              },
+              "productId": {
+                "type": "string",
+                "description": "可选来源USB产品ID，缺少时为空。",
+                "minLength": 0,
+                "maxLength": 8
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "vendorId",
+              "productId"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 32
+        }
+      },
+      "required": [
+        "ports"
+      ],
+      "additionalProperties": false
+    },
+    "usbStartInput": {
+      "type": "object",
+      "description": "明确确认Cardputer型号和已有布局后启动一次应用更新。",
+      "properties": {
+        "portId": {
+          "type": "string",
+          "description": "来自最新扫描的opaque端口ID，不能手填设备路径。",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "requestId": {
+          "type": "string",
+          "description": "本次用户意图的幂等请求ID；同ID不重复写入。",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "firmwareSha256": {
+          "type": "string",
+          "description": "用户确认且必须与当前随包应用一致的SHA-256。",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "boardConfirmed": {
+          "type": "boolean",
+          "description": "用户明确确认M5Stack Cardputer-Adv与8MiB既有兼容双固件布局。",
+          "enum": [
+            true
+          ]
+        }
+      },
+      "required": [
+        "portId",
+        "requestId",
+        "firmwareSha256",
+        "boardConfirmed"
+      ],
+      "additionalProperties": false
+    },
+    "usbJobInput": {
+      "type": "object",
+      "description": "查询或显式取消本用户及Profile已有作业。",
+      "properties": {
+        "jobId": {
+          "type": "string",
+          "description": "此前提交取得的随机作业ID。",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      },
+      "required": [
+        "jobId"
+      ],
+      "additionalProperties": false
     }
   },
   "rpc": {
@@ -1289,6 +1623,31 @@
       "description": "校验并保存本次真实用户和 Profile 的偏好。",
       "input": "settings",
       "output": "saved"
+    },
+    "usb-info": {
+      "description": "检查服务端依赖及当前作业，真实UI和api.write，不打开串口。",
+      "input": "empty",
+      "output": "usbInfo"
+    },
+    "usb-list-ports": {
+      "description": "用户明确扫描服务端USB口，真实UI和api.write，不打开串口。",
+      "input": "empty",
+      "output": "usbPorts"
+    },
+    "usb-start-update": {
+      "description": "真实UI明确确认后备份、核布局、仅更新0x10000并完整读回，不自动重刷。",
+      "input": "usbStartInput",
+      "output": "usbJob"
+    },
+    "usb-update-status": {
+      "description": "只查询本用户及Profile的作业摘要，不重放任何写入。",
+      "input": "usbJobInput",
+      "output": "usbJob"
+    },
+    "usb-cancel-update": {
+      "description": "显式取消后续IO，不承诺回滚已经发生的Flash写入。",
+      "input": "usbJobInput",
+      "output": "usbJob"
     }
   },
   "storage": {
