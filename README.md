@@ -6,6 +6,8 @@ Cardputer-Adv 的 Ekko Studio 配套插件。查看设备连接、通过 USB 升
 
 当前插件：**0.3.0-alpha.2**；配套固件：**cardputer-adv-v10.0.0-alpha.6**。这是开发版本，当前支持同一局域网使用。
 
+已提交官方插件目录审核，当前等待管理员审核。审核前可以使用上方仓库根地址安装；提交状态和回执见[提交记录](docs/SUBMISSION.zh-CN.md)。
+
 ## 使用前准备
 
 - 一台 M5Stack Cardputer-Adv，以及运行官方 Ekko Studio 的电脑。

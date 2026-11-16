@@ -1,40 +1,42 @@
-# 提交 Ekko Studio 插件
+# Ekko Studio 插件目录提交
 
-当前准备的是本地 `0.3.0-alpha.2` USB更新候选，捆绑alpha6固件不变，不把旧版测试当作新USB实际烧录证据。alpha6固件Release仍为草稿；本版验证以[检查记录](VALIDATION.zh-CN.md)为准。尚未提交本版云端目录审核或发布npm。
+2026年11月16日，已通过官方Studio插件中心提交 **M5Stack Cardputer-Adv 0.3.0-alpha.2**。官方返回HTTP 201、ok=true、status=pending，前端显示「已收到插件信息，等待管理员审核」。当前为**待审核**，不代表已经上架。
 
-## 固定材料
+- 公开仓库：https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv
+- 默认分支：main，提交前已更新至已验证的0.3.0-alpha.2。
+- 提交时代码提交：54bacb6717e39432730e60456373b3a5f27b371e。
+- 提交编号：67f42387-4e2e-40b5-b458-6dd880ac5f53。
+- [官方回执摘要](evidence/market-submission-20261116.json)。
 
-- 插件独立仓库：[thursdaycapital/ekko-studio-plugin-cardputer-adv](https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv)。发布时仓库根须包含`plugin.json`、成品入口及全部捆绑材料；不使用裸固件仓库或`/tree/...`子页面作为安装源。
-- `plugin.json`与`package.json`版本统一为`0.3.0-alpha.2`，使用官方SDK v1、`ui`／`api.read`／`api.write`及当前调用者／Profile作用域。新增服务端USB应用更新，不注册模型烧录工具、HTTP服务或聊天桥接；原生依赖与用户确认范围必须明确。
-- 应用`cardputer-adv-v10.0.0-alpha.6`：3,321,072B、SHA `9208e53b8336523b50a3d49ce5a18f559f9aa79a885bef6df2deaf201c930230`；对应源码快照`a78fc66b7b57b06cd1de8dd990d633d0b497fda7`。
-- 应用只用[固定公开提交 raw 文件](https://raw.githubusercontent.com/thursdaycapital/ekko-cardputer-adv-stock-lan/a78fc66b7b57b06cd1de8dd990d633d0b497fda7/firmware/ekko-cardputer-next-0x10000.bin)；alpha6草稿Release不列为公共下载。
-- 对应`firmware/source.tar.gz`：10,104,056B、SHA `dedf8d3dfb27b5c55ecfb2f8bdda018dbae2ae5e5f670fa7de810d08f81d72e0`，随插件包提供，无独立公开下载。清单不得伪造Draft源码URL。
+## 提交资料
 
-清单应明确草稿发布状态。旧清单缺省按已发布处理；本地源码归档没有下载URL时，只显示随包提供。链接格式正确、标签或文件名相同都不替代本地字节校验。
+名称：M5Stack Cardputer-Adv
 
-## 提交前需要核对
+M5Stack Cardputer-Adv 的 Ekko Studio 配套插件与固件。查看设备局域网连接、引导首次绑定，并通过 USB 升级配套固件，无需修改电脑端 Studio 或增加聊天桥接。
 
-1. 原生插件中心支持的本地目录安装，确认信任、启用、偏好隔离、四视图和真实设备字段须用本版验证；alpha5旧宿主证据单列历史。
-2. 运行`npm run harness:check`、`npm test`、浏览器及官方宿主检查，检查`npm pack`分发内容。当前成品`.mjs`无需安装时构建；检查是否通过由本轮实际记录填写。
-3. 所有公开结构变更同步契约及说明，真实调用者与取消边界保留，升级不清理个人设置；版本／文件／校验／公开链接一致。
-4. 当前固件真实时间过期、普通重启、原生登记LAN和Codex语音链路按其范围记录；16实体仅1项，其他15、Wi-Fi／掉电及完整恢复仍暂停，不因插件测试变为通过。
-5. 当前take为released4940ms，不宣称同次自动五秒或完整80,000帧。用户反馈与同boot遥测分开保存。
-6. 继续保留BSL-1.1、第三方代码／字典／字体／素材来源、对应源码和RELINK；核对独立素材再分发范围。公开包不能包含NVS、整机备份、Wi-Fi密码、账号密码、Token、API Key或原始日志。
+设备端提供 16 Agent 选择目录、中文键盘输入、聊天记录和按住说话功能（单次最长 5 秒，不依赖 SD 卡）。实际 Agent 可用性取决于电脑已安装、授权的运行时及模型配置。
 
-`package.json`的private阻止误发npm，不影响本地目录或GitHub安装。把本地源码改好并不自动升级已安装快照，也不会重刷M5。
+USB 升级前保存本机私有整机备份并检查兼容布局，仅更新 Ekko 应用，读回核对原厂工具与设置保持完整。包内提供固件、对应源码、中文安装教程和校验信息。
 
-## 云端目录材料草稿
+当前 0.3.0-alpha.2 为局域网开发预览版，已在官方 Studio 0.8.24 验证。适用于已安装本项目兼容 8MiB 双固件布局的 M5Stack Cardputer-Adv；不支持新机首刷、跨网远程或 OTA。全部 16 Agent 及异常恢复场景的实机矩阵仍未完成。
 
-在Studio「插件中心」选择「提交插件」，人工核对当时已公开的插件仓库HTTPS根地址、版本及材料，再提交审核；不自动发布，也不代用户确认新信任。
+## 公开安装检查
 
-名称：`M5Stack Cardputer-Adv`
+已使用官方Studio0.8.24的仓库安装流程，从上述公开根地址安装0.3.0-alpha.2。插件保持enabled/active、配置不变，get-overview与usb-info均200，固件材料校验和USB原生组件加载通过。宿主会把仓库地址正规化为github:owner/repo#commit，不能把这与安装失败混淆。没有打开设备串口或重复刷写。
 
-描述草稿：
+## 后续更新
 
-```text
-M5Stack Cardputer-Adv 的 Ekko Studio 设备管理与固件配套插件。使用官方 SDK v1 查看原生 MCU 状态，按账号和 Profile 保存管理入口，并提供可校验应用、对应源码和中文安装指南。M5 直接使用 Studio 原生聊天协议，不修改电脑后端，不增加桥接。
+1. 确保仓库默认分支包含待审核版本、完整plugin.json、成品入口、图标及固件/源码材料。官方根地址安装读取默认分支，不能只更新开发分支。
+2. 在插件中心「提交插件」填写规范HTTPS仓库根地址、名称与描述；当前流程无需上传ZIP或填写账号密码。
+3. 仅提交一次并保存回执。超时或结果不确定时先核对，不盲目重复提交；待审核不等于公开目录已上架。
+4. 当前代码及配套固件保持开发预览范围，首次整机刷写、跨网远程、其他平台与完整16 Agent/异常实机矩阵按原验证记录处理。
 
-alpha6保留16 Agent目录、Studio模型／原生CLI、中文输入、历史和最多五秒的无SD RAM录音。0.3插件新增服务端USB应用更新，先私有整机备份、核对现机布局，再只写0x10000应用并完整读回保护原厂与设置。只供已有本项目精确8MiB双固件布局，不支持新机首刷、跨网远程或OTA。新增USB实物验证、部分Agent和恢复场景仍须按本版记录逐项验收。SDK来源为官方0.8.23对应提交，兼容宿主基线为官方0.8.24；素材和许可限制见包内声明。
-```
+## 本次发现与处理
 
-旧alpha5的公开根地址安装与官方宿主成功记录保留在[验证记录](VALIDATION.zh-CN.md)，不能移作本版通过。本阶段只准备和本地检查，不声称云端目录已上架。
+| 严重性／置信度 | 事实与处理 |
+|---|---|
+| 中／高 | 提交前默认main还是0.2.0-alpha.5，直接交根URL会拿到旧版；已在提交前快进更新main，并从公开仓库实际安装核对0.3.0-alpha.2。 |
+| 低／高 | 安装结果source会正规化为github:owner/repo#commit，逐字与HTTPS原输入比较会误报失败；已核正确来源及固定代码提交，实际运行与组件均正常。 |
+| 范围限制／高 | 本次只有pending回执；公开目录状态与管理员审批尚未完成，不自动代为批准或再次提交。 |
+
+私有完整Flash、NVS、Wi-Fi密码、认证/API Key、操作账号和原始日志不随提交材料公开。源码、许可及已知限制继续见包内说明。

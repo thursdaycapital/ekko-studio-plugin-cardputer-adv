@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "submittedOn": "2026-11-16",
+  "repository": "https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv",
+  "name": "M5Stack Cardputer-Adv",
+  "description": "M5Stack Cardputer-Adv 的 Ekko Studio 配套插件与固件。查看设备局域网连接、引导首次绑定，并通过 USB 升级配套固件，无需修改电脑端 Studio 或增加聊天桥接。\n\n设备端提供 16 Agent 选择目录、中文键盘输入、聊天记录和按住说话功能（单次最长 5 秒，不依赖 SD 卡）。实际 Agent 可用性取决于电脑已安装、授权的运行时及模型配置。\n\nUSB 升级前保存本机私有整机备份并检查兼容布局，仅更新 Ekko 应用，读回核对原厂工具与设置保持完整。包内提供固件、对应源码、中文安装教程和校验信息。\n\n当前 0.3.0-alpha.2 为局域网开发预览版，已在官方 Studio 0.8.24 验证。适用于已安装本项目兼容 8MiB 双固件布局的 M5Stack Cardputer-Adv；不支持新机首刷、跨网远程或 OTA。全部 16 Agent 及异常恢复场景的实机矩阵仍未完成。",
+  "pluginVersion": "0.3.0-alpha.2",
+  "codeCommitAtSubmission": "54bacb6717e39432730e60456373b3a5f27b371e",
+  "defaultBranch": "main",
+  "httpStatus": 201,
+  "submissionId": "67f42387-4e2e-40b5-b458-6dd880ac5f53",
+  "marketplacePluginId": "c64aec6a5dc453010ceaf2d81ccbdf9af9de41e4c63d60505fe80b7dca7aff45",
+  "status": "pending",
+  "createTime": 1794815906,
+  "postCount": 1,
+  "approved": false,
+  "listed": false,
+  "publicRepositoryInstall": {
+    "version": "0.3.0-alpha.2",
+    "source": "github:thursdaycapital/ekko-studio-plugin-cardputer-adv#54bacb6717e39432730e60456373b3a5f27b371e",
+    "enabled": true,
+    "status": "active",
+    "configPreserved": true,
+    "rpc": {
+      "get-overview": {
+        "status": 200,
+        "artifactVerified": true
+      },
+      "usb-info": {
+        "status": 200,
+        "available": true,
+        "reason": ""
+      }
+    }
+  },
+  "notes": [
+    "Official Studio submission uses a public repository URL, name and description; no ZIP or credentials were uploaded.",
+    "Pending is an acknowledged review request, not marketplace approval.",
+    "Default branch was fast-forwarded to the verified 0.3.0-alpha.2 before submitting.",
+    "Installer canonicalizes the repository URL to github:owner/repo#commit.",
+    "No firmware flash or device credential data is included."
+  ]
+}
