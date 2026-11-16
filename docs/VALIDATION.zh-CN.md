@@ -1,6 +1,29 @@
 # 检查记录
 
-## 0.2.0-alpha.5 最终 r2 捆绑
+## 0.2.0-alpha.6：日常官方0.8.24本地验证通过
+
+材料目标为真实alpha6应用3,321,072B／SHA `9208e53b8336523b50a3d49ce5a18f559f9aa79a885bef6df2deaf201c930230`，随包源码10,104,056B／SHA `dedf8d3dfb27b5c55ecfb2f8bdda018dbae2ae5e5f670fa7de810d08f81d72e0`，对应公开源码快照`a78fc66b7b57b06cd1de8dd990d633d0b497fda7`。应用来自该完整公开commit的raw文件，不使用alpha6未公开Release草稿；源码暂时仅随插件包提供。
+
+本版实际完成官方harness、33项单元测试和5组Chrome沙箱检查；通过官方同ID本地目录升级安装到日常原版0.8.24，插件保持enabled/active、配置及当前账号/Profile偏好不变。三个真实读取RPC与实际客户端JSON源码匹配、四页面交互和滚动均通过，插件alert及浏览器pageerror为0。真实登记设备2条、LAN在线1条，只有安全摘要向前端传递。项目继续使用官方SDK `80d57ddffe3105b3ffadf4cedc0b995ef3951d0f`、宿主0.8.24、`ui`／`api.read`。
+
+固件证据与本版插件检查分别记录：
+
+| 项目 | 当前状态 |
+|---|---|
+| alpha6实际时间过期恢复 | 真实M5通过：45秒令牌、保持真正过期阶段签名／身份不变，旧JWT401后恢复。 |
+| alpha6普通Studio重启恢复 | 真实M5连接恢复通过，旧JWT仍200；不把这项当作额外过期或续期证明。 |
+| alpha6原生登记与LAN | 官方登记201、匹配记录0→1、LAN在线，其他设备不变；namespace ready不单独证明目录存在。 |
+| 当前Codex路由 | 当前STT／文字回答／TTS有成功记录；用户确认打字／历史／实际声音。新boot按键／翻页计数为0，不能独立重现之前动作。 |
+| 当前take自动五秒 | 仍未核定：实际take released4940ms，是松手停止，不是wall_limit5000ms证据。 |
+| 16 Agent实体矩阵 | Codex仅1项当前记录，其他15项及Wi-Fi／掉电测试按用户要求暂停。 |
+| 本版插件安装／RPC／四视图 | 本版实际原生升级、3个读取RPC、4页面和偏好保留均通过；没有请求M5、发送模型消息、改电脑核心或恢复暂停的实体测试。 |
+
+插件整合不需要刷写设备，不能借本地插件测试恢复用户暂停的实体操作。后文均为标注版本的历史记录；旧dev10、alpha3或alpha5材料不表示alpha6全矩阵通过。
+
+
+本轮结构化证据见 [日常官方宿主检查](evidence/alpha6-daily-official-host-0.8.24-20261116.json)；[应用外链实取](evidence/alpha6-public-application-download-20261116.json)已确认HTTP200、3,321,072B和SHA与包内相同。源码仅随包提供，没有构造未公开Release下载。客户端接口返回JSON `{source}`，校验比较解析后的源码，而非HTTP信封字节。未使用旧0.8.22源码夹具替代当前0.8.24实际运行。
+
+## 0.2.0-alpha.5 历史：最终 r2 捆绑
 
 本地清单对应真实 alpha.5 应用与 r2 完整源码。固件 Release 已公开：应用 3,321,056 B、SHA `96e29f0aca8160e902f7cc56d8cac4446b435987b64fe0a800bc11f741d002c0`；r2 源码 10,157,492 B、SHA `a495bef8c1fa6394009610eb965dd9ba2f479b165ace238e3cfc2821bce7dfae`。两件均从各自最终公开 URL 实际下载并与本地核对。源码提交为 `d087ae02d5c13ae0ac711a09415cfe8aa31ddcc4`，旧源码资产仅留追溯。
 

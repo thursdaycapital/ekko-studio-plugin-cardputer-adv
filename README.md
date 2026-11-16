@@ -1,48 +1,51 @@
 # M5Stack Cardputer-Adv · Ekko Studio 插件与固件
 
-按 Ekko Studio 官方 SDK v1 模板创建的独立插件。提供原生设备状态、连接偏好、固件信息及校验、首次绑定与使用指南。M5 的聊天直接使用 Studio 原生接口；插件不代理聊天，不修改电脑端 Studio。
+按官方 SDK v1 模板制作的独立管理插件。M5 聊天直接使用 Studio 原生接口；**插件可选，不代理聊天、不修改电脑端，也不负责刷机或 OTA**。
 
-**插件是可选的管理入口，M5 聊天不依赖安装插件。** 附带固件仅用于本项目既有 8MiB 双固件布局更新，不支持陌生设备或新机首刷。先看[三步使用教程](docs/QUICKSTART.zh-CN.md)，详细边界见[固件说明](docs/FIRMWARE.zh-CN.md)。
+当前本地候选为插件 **0.2.0-alpha.6**，捆绑固件 **cardputer-adv-v10.0.0-alpha.6**。本版已在日常官方 Studio 0.8.24 完成本地升级、启用、三个读取RPC及四页面实测，原有设置保留；[本版检查记录](docs/VALIDATION.zh-CN.md)与alpha5历史分开。alpha6 固件 Release 仍是未公开草稿，不提供其公共下载链接。已公开插件仓库当前版本也不等于本地 alpha6 候选。
 
-当前公开预览为插件 **0.2.0-alpha.5**，捆绑固件 **cardputer-adv-v10.0.0-alpha.5**。独立插件仓库与固件 Release 均已公开；应用和 r2 源码已实际下载并核对大小与 SHA。插件已在未经修改的官方 Studio 0.8.24 中通过普通 Chrome 安装、启用、四页面和真实设备列表检查；本版 M5 实机验收仍待完成，不能沿用旧版测试结果。详见[发布清单](docs/SUBMISSION.zh-CN.md)。
+## 三步使用
 
-## 能做什么
+1. **准备 M5。** 此应用只更新本项目已有的 ESP32-S3／8MiB 双固件布局，不支持陌生设备或新机首刷。[安装教程](docs/INSTALL.zh-CN.md)要求私人备份、布局核对，只写 `0x10000` 并读回验证。
+2. **首次绑定一次。** 电脑打开官方 Studio，M5 与电脑接同一 Wi-Fi，从原厂菜单进入 EkkoStudio，在同网浏览器打开设备的 `/device`，选择电脑、登录自己的账号及 Profile。密码只输入原生设备页，不输入插件。有效绑定后日常无需重复登录。
+3. **选择并聊天。** 首页方向键浏览，Tab 选 Studio模型／原生CLI，OK 一次进入。打字后 OK 发送，Ctrl＋空格切中英文，Fn＋上下翻记录。长 G0 或 Fn＋空格录音、松开发送，采集就绪后最多 5 秒；短 G0／Esc 返回。
 
-- 在插件工作区查看 Studio 已登记的原生 MCU 设备，分别显示局域网状态和电脑端中继状态。
-- 手动选择 M5Stack Cardputer-Adv，并保存其可信局域网管理地址；偏好按当前账号和 Profile 隔离。
-- 查看包内固件的实际大小、SHA-256、安装地址、固定公开下载地址和源码。
-- 查看原生绑定及操作教程，无需电脑补丁或新建桥接服务。
-- 包内固件保留固定 16 Agent 目录、中文输入、12px 界面、头像、启动动画、按键声及历史翻页；Fn＋空格录音最长 5 秒，在 RAM 压缩暂存，不需要 SD 卡。
+中文模式有拼音预编辑时，第一次 OK 只提交选词或原拼音，再按 OK 才发送。新 Agent／Profile 上下文默认中文，语言状态不保证跨 Agent 统一。[三步教程](docs/QUICKSTART.zh-CN.md)说明日常操作。
 
-原生设备接口没有硬件型号或 IP，插件不会据名称猜型号、自动扫描网络或声称已验证真实 M5。电脑端中继“已连接”也不等于 M5 跨网可用；本版固件只支持局域网。
+## 包内固件与源码
 
-## 安装插件
+| 材料 | 大小 / SHA-256 |
+|---|---|
+| alpha6 应用 | 3,321,072 B · `9208e53b8336523b50a3d49ce5a18f559f9aa79a885bef6df2deaf201c930230` |
+| `firmware/source.tar.gz` | 10,104,056 B · `dedf8d3dfb27b5c55ecfb2f8bdda018dbae2ae5e5f670fa7de810d08f81d72e0` |
 
-需要包含官方 SDK v1 插件中心的 Studio。SDK 来源仍是官方 **0.8.23 / `80d57ddffe3105b3ffadf4cedc0b995ef3951d0f`**；当前兼容宿主为未经修改的官方 **0.8.24**。旧 0.1.1 的真实宿主检查单独留存，alpha.5 最终 r2 捆绑已在该原版宿主完成安装、RPC、四视图实际 Chrome 和原生卸载复测；这不是 M5 实机验收。
+应用外链是[固定公开提交的原始文件](https://raw.githubusercontent.com/thursdaycapital/ekko-cardputer-adv-stock-lan/a78fc66b7b57b06cd1de8dd990d633d0b497fda7/firmware/ekko-cardputer-next-0x10000.bin)，与包内应用按 SHA 核对；不依赖 alpha6 Release 草稿。对应源码快照为 `a78fc66b7b57b06cd1de8dd990d633d0b497fda7`。完整源码、许可和重新链接材料随插件包提供，**暂无独立公开的 alpha6 源码归档下载链接**；请从插件分发包提取 `firmware/source.tar.gz`，按 `firmware/RELINK.md` 使用。
 
-1. 打开 Studio「插件中心」→「安装插件」，粘贴 [GitHub 仓库根地址](https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv)。
-2. 由超级管理员按宿主流程确认信任并安装，再点击「启用」。官方 UI 会自动把仓库地址固定到安装时的完整提交，不需要手动输入 SHA。本轮实际安装固定到 `5c455ed12a8c6cfd9566f03319be5ee810425c13`。
-3. 从插件详情进入「设备」，或在头像菜单「导航栏设置」中添加 Cardputer-Adv 入口。
+官方 iframe 不提供 USB/WebSerial、直接联网或下载能力。页面给出可复制的公开应用地址，复制到外部浏览器下载；不能在插件里一键刷机、下载包内文件或自动更新设备。实际本地文件路径和校验值以 `firmware/release.json` 为准。
 
-本地安装复制的是安装时快照；改源码后重新安装，或用 `ekko-studio plugins link /absolute/path/to/project` 开发。入口已经是可执行 `.mjs`，普通安装无需运行构建脚本。
+## 当前证据与边界
 
-独立仓库 `thursdaycapital/ekko-studio-plugin-cardputer-adv` 已公开，根部含 `plugin.json`，仓库根地址的普通 UI 安装流程已实测。不要把固件仓库或 `/tree/...` 子页面当成本插件安装地址。本项目尚未提交 Studio 云端目录审核或发布 npm；材料见 [提交说明](docs/SUBMISSION.zh-CN.md)。
+alpha6 已取得真实 M5 的令牌实际时间过期恢复、普通 Studio 重启恢复、原生设备登记和 LAN 在线证据；Codex 路由的 STT、文字回答及 TTS 已有当前版记录。用户确认打字、翻历史和听感正常，但新启动的按键计数不能独立重现之前操作。
 
-## 绑定与固件
+本次录音为松手停止 `released / 4940ms`，不是同次 `wall_limit / 5000ms` 的自动截止证据。16 项实体路由仅 Codex 1 项有当前记录，其余 15 项、Wi-Fi／掉电及完整故障矩阵按用户要求暂停；不把插件本地测试、旧版记录或桌面 14/16 结果当作这些项目通过。详见[固件范围](docs/FIRMWARE.zh-CN.md)。
 
-首次绑定：M5 与电脑接同一 Wi-Fi → 进入 EkkoStudio → 在同网浏览器打开设备显示的 `http://设备IP/device` → 选择电脑、登录自己的 Studio 账号和 Profile。密码仅输入原生设备页，不输入插件。插件保存管理地址只为生成入口，不会代替固件内的绑定。
+当前固件只支持局域网，电脑中继在线不代表 M5 跨网可用。电脑 IP 改变时，保存入口不会自动迁移，需用原生设备页重新选择／登录。管理通道在线也不能单独证明账号目录已登记；实际目录状态单独核对。
 
-固件安装必须先核对布局并备份，详见[安装教程](docs/INSTALL.zh-CN.md)。实际文件名、版本、大小与 SHA 以插件「固件」页及 `firmware/release.json` 为准。已有布局的应用写入地址为 `0x10000`；禁止写到 `0x0` 或擦除整片 Flash。
+## 安装可选插件
 
-插件 iframe 遵循官方沙箱：没有 USB/WebSerial、直接联网或下载权限。因此页面提供可选择、复制的固定下载链接及管理地址；请复制后用外部浏览器打开。刷写由用户在本机运行 esptool 完成，不是插件内一键刷机或 Studio OTA。
+需要支持官方 SDK v1 的 Studio。SDK 来源为官方 0.8.23／`80d57ddffe3105b3ffadf4cedc0b995ef3951d0f`，本轮宿主基线仍是官方 0.8.24。
 
-## 数据与权限
+本地 alpha6 候选使用完整插件目录，在原生插件中心按本地目录流程安装、确认信任并启用；本机实际升级、读取接口及页面检查已通过，详见本版验证记录。已公开的 [插件仓库](https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv)仍可用根地址安装，但不能据此认为取得尚未发布的本地 alpha6。页面入口可从插件详情打开，或在头像菜单「导航栏设置」手动添加。
 
-仅声明 `ui` 与 `api.read`。后端通过当前调用者的 `run.host.request('/api/mcu-devices')` 读取原生设备表；前端只收到设备码末 6 位及必要状态。插件只持久化选中设备 ID 与局域网管理 origin，不保存 Wi-Fi 密码、账号密码、Token 或 API Key，也不读取 Studio 数据库或登录文件。固件模型接口本身可能接收 API Key；这不等于密钥绝不经过设备。
+入口为成品 `.mjs`，普通安装无需构建。更新源码不自动改变已安装快照，也不重刷 M5。提交云端目录或 npm 的状态见[提交说明](docs/SUBMISSION.zh-CN.md)。
 
-原生设备管理 HTTP 仍以可信局域网为边界，不要映射到公网。第三方 Node 插件是可信代码，SDK 权限并非操作系统级沙箱。源码、许可与素材边界见 [第三方声明](THIRD_PARTY_NOTICES.md)。
+## 权限与数据
 
-## 开发与验证
+仅声明 `ui` 与 `api.read`。使用本次调用者的官方设备接口，前端只收到设备码末六位；不按设备名称推断板型或 IP。偏好按真实账号和 Profile 隔离，只保存设备 ID 与管理地址，不保存 Wi-Fi 密码、账号密码、Token 或 API Key，不读取宿主数据库或凭据。官方固件模型接口可能返回密钥，不能宣称密钥绝不经过设备。
+
+不新增广域 HTTP 权限、下载服务或桥接。原生设备管理只面向可信局域网，不映射公网。Node 插件是可信后端代码，SDK 权限不是操作系统沙箱。
+
+## 开发
 
 ```sh
 npm install --ignore-scripts --no-audit --no-fund
@@ -51,24 +54,6 @@ npm test
 npm pack
 ```
 
-无需外部运行时依赖。浏览器验证使用已有 Playwright 与 Chromium：
+浏览器测试使用 `PLAYWRIGHT_MODULE` 与 `CHROMIUM_EXECUTABLE_PATH` 指定已有环境；真实宿主测试使用 `EKKO_STUDIO_ROOT` 指定官方源码副本。以上命令不表示本轮已执行，结果看[验证记录](docs/VALIDATION.zh-CN.md)。
 
-```sh
-PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.mjs \
-CHROMIUM_EXECUTABLE_PATH=/absolute/path/to/chromium \
-npm run test:browser
-```
-
-可选的官方宿主安装 / 运行时集成测试：对指定官方源码副本先安装其依赖，再执行 `EKKO_STUDIO_ROOT=/absolute/path/to/official-checkout npm run test:host`。该测试只在系统临时目录安装插件快照、使用合成设备 API 数据，不访问日常 Studio 的账号或状态目录。普通单元测试不声称覆盖真实设备或真实 API 响应。
-
-宿主 SDK 与指南在 `sdk/`、`docs/`，插件边界在 `contracts/plugin.json`、[CONTRACTS](docs/CONTRACTS.md)。固件原始公开源码与各组件许可完整保留在 `firmware/source.tar.gz`，修改和重新链接见 `firmware/RELINK.md`。安装插件本身不会重刷设备或升级 Studio。
-
-alpha.5 的 `firmware.validation` 暂为空／未确认，当前 0.8.24 的插件检查不能替代 M5 实测。alpha.3 的中文输入、历史及五秒语音已有历史用户记录，也不能算作 alpha.5 通过。固定 16 Agent 不会自动包含新插件 Agent；所用 Agent 必须已安装、授权和配置。首页 Tab 选择「Studio模型／原生CLI」；兼容模型选择遵循官方配置，原生模式使用该 CLI 的默认设置，不自动换 Agent。`bedrock_converse` 与 `codex_app_server` 不受本版 Studio 模型模式支持。
-
-## 上游
-
-- [官方插件规范](https://github.com/EKKOLearnAI/ekko-studio/blob/80d57ddffe3105b3ffadf4cedc0b995ef3951d0f/docs/plugins.md)
-- [官方插件模板](https://github.com/EKKOLearnAI/ekko-studio/tree/80d57ddffe3105b3ffadf4cedc0b995ef3951d0f/packages/plugin-sdk/template)
-- 固件源码快照：`d087ae02d5c13ae0ac711a09415cfe8aa31ddcc4`；候选 Release：`thursdaycapital/ekko-cardputer-adv-stock-lan` / `v10.0.0-alpha.5`，已实际下载并核对应用及 r2 源码。
-
-保留上游 BSL-1.1 条款；各组件、字体与素材保留各自许可。本项目是社区适配，不表示 M5Stack、Ekko Studio 或各 Agent 品牌的官方背书。
+[官方规范](https://github.com/EKKOLearnAI/ekko-studio/blob/80d57ddffe3105b3ffadf4cedc0b995ef3951d0f/docs/plugins.md) · [模板](https://github.com/EKKOLearnAI/ekko-studio/tree/80d57ddffe3105b3ffadf4cedc0b995ef3951d0f/packages/plugin-sdk/template) · [契约](docs/CONTRACTS.md) · [第三方声明](THIRD_PARTY_NOTICES.md)。保留上游 BSL-1.1；库、字体、字典与素材遵循各自许可，不表示上游品牌背书。

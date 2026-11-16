@@ -177,6 +177,12 @@ test('firmware and English guide render real metadata and remain usable on narro
     assert.match(await frame.locator('main').innerText(), /0x330000/)
     assert.equal(await frame.getByRole('textbox', { name: 'SHA-256', exact: true }).inputValue(), overview.firmware.files[0].sha256)
     assert.equal(await frame.getByRole('textbox', { name: '公开固定下载地址' }).inputValue(), overview.firmware.files[0].downloadUrl)
+    if (overview.firmware.publication === 'draft') {
+      assert.match(await frame.locator('main').innerText(), /Release 尚未公开/)
+      assert.equal(await frame.getByRole('textbox', { name: '发布页地址', exact: true }).count(), 0)
+      assert.equal(await frame.getByRole('textbox', { name: '包内源码文件', exact: true }).inputValue(), overview.firmware.source.archive.path)
+      assert.equal(await frame.getByRole('textbox', { name: '源码 SHA-256', exact: true }).inputValue(), overview.firmware.source.archive.sha256)
+    }
     assert((await frame.locator('main').innerText()).includes(`Studio ${overview.pluginSdk.hostVersion}`))
     assert.equal((await frame.locator('main').innerText()).includes('尚未完成 M5 实机验收'), !overview.pluginSdk.firmwareOnThisHostPhysicallyValidated)
     await screenshot(page, 'firmware-sandbox.png')

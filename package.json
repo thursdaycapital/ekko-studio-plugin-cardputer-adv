@@ -1,6 +1,6 @@
 {
   "name": "studio-plugin-m5stack-cardputer-adv",
-  "version": "0.2.0-alpha.5",
+  "version": "0.2.0-alpha.6",
   "type": "module",
   "private": true,
   "description": "Ekko Studio SDK v1 plugin and firmware update preview for M5Stack Cardputer-Adv",

@@ -4,7 +4,7 @@
     "apiVersion": 1,
     "sourceCommit": "80d57ddffe3105b3ffadf4cedc0b995ef3951d0f",
     "hostVersion": "0.8.24",
-    "firmwareOnThisHostPhysicallyValidated": false
+    "firmwareOnThisHostPhysicallyValidated": true
   },
   "board": {
     "name": "M5Stack Cardputer-Adv",
@@ -30,8 +30,8 @@
     "shortG0Returns": true
   },
   "firmware": {
-    "version": "cardputer-adv-v10.0.0-alpha.5",
-    "releaseLabel": "v10.0.0-alpha.5",
+    "version": "cardputer-adv-v10.0.0-alpha.6",
+    "releaseLabel": "v10.0.0-alpha.6",
     "stage": "development-preview",
     "applicationOffset": 65536,
     "applicationPartitionBytes": 3342336,
@@ -46,34 +46,40 @@
     "files": [
       {
         "path": "firmware/ekko-stock-lan-update-0x10000.bin",
-        "bytes": 3321056,
-        "sha256": "96e29f0aca8160e902f7cc56d8cac4446b435987b64fe0a800bc11f741d002c0",
+        "bytes": 3321072,
+        "sha256": "9208e53b8336523b50a3d49ce5a18f559f9aa79a885bef6df2deaf201c930230",
         "offset": 65536,
-        "downloadUrl": "https://github.com/thursdaycapital/ekko-cardputer-adv-stock-lan/releases/download/v10.0.0-alpha.5/cardputer-adv-v10.0.0-alpha.5-update-0x10000.bin",
-        "downloadAsset": "cardputer-adv-v10.0.0-alpha.5-update-0x10000.bin"
+        "downloadUrl": "https://raw.githubusercontent.com/thursdaycapital/ekko-cardputer-adv-stock-lan/a78fc66b7b57b06cd1de8dd990d633d0b497fda7/firmware/ekko-cardputer-next-0x10000.bin"
       }
     ],
     "source": {
       "repository": "https://github.com/thursdaycapital/ekko-cardputer-adv-stock-lan",
-      "commit": "d087ae02d5c13ae0ac711a09415cfe8aa31ddcc4",
-      "url": "https://github.com/thursdaycapital/ekko-cardputer-adv-stock-lan/tree/d087ae02d5c13ae0ac711a09415cfe8aa31ddcc4/source",
-      "releaseUrl": "https://github.com/thursdaycapital/ekko-cardputer-adv-stock-lan/releases/tag/v10.0.0-alpha.5",
-      "relinkUrl": "https://github.com/thursdaycapital/ekko-cardputer-adv-stock-lan/blob/d087ae02d5c13ae0ac711a09415cfe8aa31ddcc4/RELINK.md",
+      "commit": "a78fc66b7b57b06cd1de8dd990d633d0b497fda7",
+      "url": "https://github.com/thursdaycapital/ekko-cardputer-adv-stock-lan/tree/a78fc66b7b57b06cd1de8dd990d633d0b497fda7/source",
+      "relinkUrl": "https://github.com/thursdaycapital/ekko-cardputer-adv-stock-lan/blob/a78fc66b7b57b06cd1de8dd990d633d0b497fda7/RELINK.md",
       "archive": {
         "path": "firmware/source.tar.gz",
-        "bytes": 10157492,
-        "sha256": "a495bef8c1fa6394009610eb965dd9ba2f479b165ace238e3cfc2821bce7dfae",
-        "downloadAsset": "cardputer-adv-source-v10.0.0-alpha.5-r2.tar.gz",
-        "downloadUrl": "https://github.com/thursdaycapital/ekko-cardputer-adv-stock-lan/releases/download/v10.0.0-alpha.5/cardputer-adv-source-v10.0.0-alpha.5-r2.tar.gz"
+        "bytes": 10104056,
+        "sha256": "dedf8d3dfb27b5c55ecfb2f8bdda018dbae2ae5e5f670fa7de810d08f81d72e0"
       }
     },
     "validation": {
-      "textStudioVersions": [],
-      "voiceStudioVersions": [],
-      "fiveSecondAutoStopUserConfirmed": false,
+      "textStudioVersions": [
+        "0.8.24"
+      ],
+      "voiceStudioVersions": [
+        "0.8.24"
+      ],
+      "fiveSecondAutoStopUserConfirmed": true,
       "fullFiveSecondByteCountObserved": false,
       "allAgentsPhysicallyValidated": false,
-      "fullMatrixComplete": false
-    }
+      "fullMatrixComplete": false,
+      "tokenExpiryRecovery": true,
+      "studioRestartRecovery": true,
+      "physicalAgentCount": 1,
+      "fiveSecondAutoStopObserved": false,
+      "testsPaused": true
+    },
+    "publication": "draft"
   }
 }

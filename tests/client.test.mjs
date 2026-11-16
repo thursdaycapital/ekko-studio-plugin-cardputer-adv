@@ -133,6 +133,24 @@ test('firmware details display the bundled version and recorded validation state
   })
 })
 
+test('draft firmware displays bundled source and separates feedback from observed recovery', async () => {
+  const overview = { ...JSON.parse(await readFile(new URL('../firmware/release.json', import.meta.url), 'utf8')), artifactVerified: true }
+  overview.firmware.publication = 'draft'
+  delete overview.firmware.source.releaseUrl
+  delete overview.firmware.source.archive.downloadUrl
+  delete overview.firmware.source.archive.downloadAsset
+  await mountedClient({ view: 'firmware', overview }, async root => {
+    assert.match(root.textContent, /Release 尚未公开/)
+    assert.match(root.textContent, /对应源码已随插件包附带/)
+    assert.match(root.textContent, /1 \/ 16/)
+    assert.match(root.textContent, /凭证过期自动恢复/)
+    assert.match(root.textContent, /本版自动截止日志待核对/)
+    assert.match(root.textContent, /实体测试已按用户要求暂停/)
+    assert.ok(!root.find(node => node.getAttribute?.('aria-label') === '发布页地址'))
+    assert.doesNotMatch(root.textContent, /undefined/)
+  })
+})
+
 test('save RPC displays the actual validation reason without the SDK HTTP envelope', async () => {
   const reason = '仅接受私有 IPv4 或 .local 设备地址'
   await mountedClient({ failure: new Error(`API Error 500: ${reason}`) }, async (root, calls) => {

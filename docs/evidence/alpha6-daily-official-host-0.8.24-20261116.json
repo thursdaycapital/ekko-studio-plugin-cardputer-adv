@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "checkedAtUtc": "2026-11-16T05:28:11.466495+00:00",
+  "pluginVersion": "0.2.0-alpha.6",
+  "firmwareVersion": "cardputer-adv-v10.0.0-alpha.6",
+  "officialStudioVersion": "0.8.24",
+  "officialServerSha256": "c04bfec6333a0e70d763ba93ec2fff7bf3f7b6241b6b75c4d5c1d57a571084e0",
+  "installMethod": "official-native-same-id-local-directory-upgrade",
+  "previousVersion": "0.2.0-alpha.5",
+  "enabledPreserved": true,
+  "active": true,
+  "configurationPreserved": true,
+  "callerProfileSettingsPreserved": true,
+  "permissions": [
+    "ui",
+    "api.read"
+  ],
+  "rpcPassed": [
+    "get-overview",
+    "get-settings",
+    "list-devices"
+  ],
+  "actualClientJsonSourceMatches": true,
+  "localProductionFileHashes": {
+    "plugin.json": "97a55916229c318ce38ae7edab4fdfee234a9adafbd69cadccd2f726ec7097c9",
+    "server.mjs": "aadf8c5389fee15b4096c6159b34b1aac5e5eb4071a88f318f6834c4ab864472",
+    "client.mjs": "83003a06358b8d4a4381274cf8ae5b1416d106f440c7c4028dbb668eb01d153f",
+    "lib/backend.mjs": "b3cfa114b2a097c87a3521b0ffd6f08dcbccc0349ea92904f8ae00108ad85f2a",
+    "contracts/plugin.json": "63857559cfb840441fa5c84309f2802b191e0f485f8880e4477af0bb1d11e471",
+    "firmware/release.json": "e824e3c0610187a5305f8218a5469524b16d979b2ad88861015fd84d1573a38a",
+    "firmware/ekko-stock-lan-update-0x10000.bin": "9208e53b8336523b50a3d49ce5a18f559f9aa79a885bef6df2deaf201c930230",
+    "firmware/source.tar.gz": "dedf8d3dfb27b5c55ecfb2f8bdda018dbae2ae5e5f670fa7de810d08f81d72e0"
+  },
+  "actualRenderedViews": [
+    "firmware",
+    "devices",
+    "guide",
+    "preferences"
+  ],
+  "pluginAlerts": 0,
+  "browserPageErrors": 0,
+  "realDeviceCount": 2,
+  "lanConnectedDeviceCount": 1,
+  "checks": {
+    "firmware": {
+      "versionVisible": true,
+      "appHash": "9208e53b8336523b50a3d49ce5a18f559f9aa79a885bef6df2deaf201c930230",
+      "sourceHash": "dedf8d3dfb27b5c55ecfb2f8bdda018dbae2ae5e5f670fa7de810d08f81d72e0",
+      "releaseFields": 0,
+      "alerts": 0
+    },
+    "devices": {
+      "dataRows": 2,
+      "onlineLabels": 1,
+      "alerts": 0
+    },
+    "guide": {
+      "keyboardVisible": true,
+      "alerts": 0
+    },
+    "preferences": {
+      "originPreserved": true,
+      "deviceSelectionPreserved": true,
+      "alerts": 0
+    }
+  },
+  "localValidation": {
+    "officialHarness": true,
+    "unitTestsPassed": 33,
+    "browserSandboxTestsPassed": 5,
+    "allPackageArtifactsVerified": true,
+    "publicApplicationDownloadedAndHashVerified": true
+  },
+  "boundaries": {
+    "newM5Requests": 0,
+    "newModelRequests": 0,
+    "deviceFlashed": false,
+    "deviceNetworkOrAgentChanged": false,
+    "studioCoreModified": false,
+    "studioRestarted": false,
+    "broaderPhysicalTestsRemainPaused": true,
+    "pluginCloudDirectorySubmitted": false,
+    "npmPublished": false,
+    "deviceIdentifiersOrCredentialsIncluded": false
+  }
+}

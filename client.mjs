@@ -14,6 +14,8 @@ const labels = {
     selectText: '选中文本', selected: '已选中，请按 Ctrl/Cmd+C 手动复制。', copyHint: '地址和校验值可选中复制，在独立浏览器或终端中使用。',
     validatedFirmware: '固件与校验', existingOnly: '仅适用于既有双固件布局', noFirstFlash: '这不是完整首刷镜像。不要对空白设备或其他分区布局直接刷写。', firmwareIntro: '现有 Ekko 应用分区更新包。下载和刷写须使用独立工具；插件页面不能下载或刷写硬件。',
     version: '版本', file: '文件', bytes: '字节', size: '文件大小', offset: '写入偏移', partition: '应用分区大小', hash: 'SHA-256', downloadUrl: '公开固定下载地址', sourceUrl: '源码地址', releaseUrl: '发布页地址',
+    draft: '开发预览，Release 尚未公开；下方固件地址已固定到公开源码提交。', sourceBundled: '对应源码已随插件包附带', sourcePath: '包内源码文件', sourceHash: '源码 SHA-256', sourceDownload: '源码下载地址',
+    expiryRecovery: '凭证过期自动恢复', restartRecovery: 'Studio 重启自动恢复', physicalAgents: '已有实测的 Agent', autoStopObserved: '本版自动截止日志', verified: '已验证', pending: '待核对', testsPaused: '剩余实体测试已按用户要求暂停，未完成项保留待验收。',
     validation: '兼容与验收边界', textTested: '文字实机记录', voiceTested: '语音实机记录', hostBaseline: '插件 SDK 基线', notValidated: '此 SDK 宿主版本尚未完成 M5 实机验收。插件页面测试不等于固件实机通过。', agentNotValidated: '16 Agent 尚未逐一完成实机验收；新增插件 Agent 不会自动加入固件。', matrixIncomplete: '完整恢复与异常测试矩阵尚未完成。', autoStop: '5 秒自动停止', userConfirmed: '用户已确认', notConfirmed: '未确认', fullBytes: '录满 5 秒采集字节数', observed: '已观测', notObserved: '尚未观测完整值',
     guideIntro: '插件是可选的管理入口；M5 直接连接 Studio，聊天不依赖安装插件。', firstPairing: '三步开始使用',
     step1: '已有兼容固件可直接使用。需要更新时，按安装教程先备份并核对布局，只更新 Ekko 应用并读回校验，保留原厂与设置；新机不适用这个更新包。', step2: 'M5 与运行官方 Studio 的电脑连接同一 Wi-Fi。首次在独立浏览器打开 M5 显示的 /device 地址，选择电脑、登录并选 Profile；已有有效绑定可跳过。插件偏好只方便保存入口。', step3: '从原厂菜单进入 EkkoStudio，选择电脑上已经配置好的 Agent，按 OK 进入。直接打字、OK 发送，或按住 Fn＋空格说话，松开发送。',
@@ -35,6 +37,8 @@ const labels = {
     selectText: 'Select text', selected: 'Selected. Press Ctrl/Cmd+C to copy manually.', copyHint: 'Select and copy addresses or checksums for use in a separate browser or terminal.',
     validatedFirmware: 'Firmware and checksums', existingOnly: 'Existing dual-firmware layout only', noFirstFlash: 'This is not a complete first-flash image. Do not flash a blank device or a different partition layout.', firmwareIntro: 'An update for the existing Ekko application partition. Use a separate tool for download and flashing; this plugin page cannot download or flash hardware.',
     version: 'Version', file: 'File', bytes: 'bytes', size: 'File size', offset: 'Flash offset', partition: 'Application partition size', hash: 'SHA-256', downloadUrl: 'Fixed public download URL', sourceUrl: 'Source URL', releaseUrl: 'Release page URL',
+    draft: 'Development preview; the Release is not public. The firmware URL below is pinned to a public source commit.', sourceBundled: 'Corresponding source is included in the plugin package', sourcePath: 'Bundled source file', sourceHash: 'Source SHA-256', sourceDownload: 'Source download URL',
+    expiryRecovery: 'Token expiry recovery', restartRecovery: 'Studio restart recovery', physicalAgents: 'Agents exercised on hardware', autoStopObserved: 'Automatic-stop log on this version', verified: 'Verified', pending: 'Pending', testsPaused: 'Further hardware tests are paused at the user’s request; unfinished checks remain pending.',
     validation: 'Compatibility and validation scope', textTested: 'Physical text tests', voiceTested: 'Physical voice tests', hostBaseline: 'Plugin SDK baseline', notValidated: 'M5 hardware has not been validated against this SDK host version. UI tests are not firmware hardware acceptance.', agentNotValidated: 'All 16 Agents have not been physically validated. New plugin Agents do not automatically join the firmware catalog.', matrixIncomplete: 'The complete recovery and failure test matrix remains unfinished.', autoStop: '5-second automatic stop', userConfirmed: 'User confirmed', notConfirmed: 'Unconfirmed', fullBytes: 'Full 5-second captured byte count', observed: 'Observed', notObserved: 'Full count not yet observed',
     guideIntro: 'This plugin is optional. The M5 connects directly to Studio and does not need the plugin for chat.', firstPairing: 'Start in three steps',
     step1: 'Use the existing compatible firmware, or follow the installation guide to back up, verify the layout, update only the Ekko app, and read it back. Factory firmware and settings are preserved. This update is not for a blank device.', step2: 'Join the same Wi-Fi as the computer running official Studio. For first pairing, open the M5 /device address in a separate browser, choose the computer, sign in, and select a Profile. Skip this with a valid saved binding. Plugin preferences only save the shortcut.', step3: 'Open EkkoStudio from the factory menu, choose an Agent configured on the computer, and press OK. Type and press OK to send, or hold Fn + Space to speak and release to send.',
@@ -309,6 +313,7 @@ export async function mount(root, ctx) {
     top.append(caution, el('p', t.firmwareIntro, 'adv-note'))
     const fw = overview.firmware
     top.append(el('p', fw.version, 'adv-version'))
+    if (fw.publication === 'draft') top.append(el('p', t.draft, 'adv-note'))
     for (const file of fw.files) {
       const pane = el('article', undefined, 'adv-firmware')
       pane.append(el('h3', file.path))
@@ -321,11 +326,22 @@ export async function mount(root, ctx) {
     }
     top.append(el('p', t.copyHint, 'adv-note'))
     copyField(top, t.sourceUrl, fw.source.url)
-    copyField(top, t.releaseUrl, fw.source.releaseUrl)
+    if (fw.source.releaseUrl && fw.publication !== 'draft') copyField(top, t.releaseUrl, fw.source.releaseUrl)
+    if (fw.source.archive) {
+      top.append(el('p', t.sourceBundled, 'adv-note'))
+      copyField(top, t.sourcePath, fw.source.archive.path)
+      copyField(top, t.sourceHash, fw.source.archive.sha256)
+      if (fw.source.archive.downloadUrl) copyField(top, t.sourceDownload, fw.source.archive.downloadUrl)
+    }
     const validation = section(t.validation)
     const dl = el('dl')
     for (const [label, value] of [[t.textTested, fw.validation.textStudioVersions.join(', ') || '—'], [t.voiceTested, fw.validation.voiceStudioVersions.join(', ') || '—'], [t.autoStop, fw.validation.fiveSecondAutoStopUserConfirmed ? t.userConfirmed : t.notConfirmed], [t.fullBytes, fw.validation.fullFiveSecondByteCountObserved ? t.observed : t.notObserved], [t.hostBaseline, `Studio ${overview.pluginSdk.hostVersion} · SDK API ${overview.pluginSdk.apiVersion}`]]) dl.append(el('dt', label), el('dd', value))
+    for (const [key, label] of [['tokenExpiryRecovery', t.expiryRecovery], ['studioRestartRecovery', t.restartRecovery], ['fiveSecondAutoStopObserved', t.autoStopObserved]]) {
+      if (fw.validation[key] !== undefined) dl.append(el('dt', label), el('dd', fw.validation[key] ? t.verified : t.pending))
+    }
+    if (fw.validation.physicalAgentCount !== undefined) dl.append(el('dt', t.physicalAgents), el('dd', `${fw.validation.physicalAgentCount} / ${overview.capabilities.agentCatalogCount}`))
     validation.append(dl)
+    if (fw.validation.testsPaused) validation.append(el('p', t.testsPaused, 'adv-note'))
     if (!overview.pluginSdk.firmwareOnThisHostPhysicallyValidated) validation.append(el('p', t.notValidated, 'adv-note'))
     if (!fw.validation.allAgentsPhysicallyValidated) validation.append(el('p', t.agentNotValidated, 'adv-note'))
     if (!fw.validation.fullMatrixComplete) validation.append(el('p', t.matrixIncomplete, 'adv-note'))

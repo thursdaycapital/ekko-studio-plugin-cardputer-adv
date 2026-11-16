@@ -134,6 +134,14 @@ async function fixture(t) {
   t.after(() => rm(root, { recursive: true, force: true }))
   await mkdir(path.join(root, 'firmware'))
   const manifest = JSON.parse(await readFile(path.join(projectRoot, 'firmware/release.json'), 'utf8'))
+  // These synthetic Release URLs exercise format validation only. They do
+  // not assert that a draft's public assets have been published.
+  manifest.firmware.publication = 'published'
+  manifest.firmware.source.releaseUrl = `${manifest.firmware.source.repository}/releases/tag/${manifest.firmware.releaseLabel}`
+  for (const item of [...manifest.firmware.files, ...(manifest.firmware.source.archive ? [manifest.firmware.source.archive] : [])]) {
+    item.downloadAsset = path.basename(item.path)
+    item.downloadUrl = `${manifest.firmware.source.repository}/releases/download/${manifest.firmware.releaseLabel}/${item.downloadAsset}`
+  }
   const data = await readFile(path.join(projectRoot, manifest.firmware.files[0].path))
   const metadata = path.join(root, 'firmware/release.json')
   const image = path.join(root, manifest.firmware.files[0].path)
@@ -277,4 +285,35 @@ test('bundled source archive has exact bytes/hash and a same-release safe downlo
   }
   Object.assign(f.manifest, structuredClone(original)); delete f.manifest.firmware.source.archive; await f.save()
   assert.equal((await loadOverview(f.root)).artifactVerified, true) // Old catalogs remain supported.
+})
+
+test('draft bundles verify local source without inventing public Release links', async t => {
+  const f = await fixture(t)
+  f.manifest.firmware.publication = 'draft'
+  delete f.manifest.firmware.source.releaseUrl
+  delete f.manifest.firmware.source.archive.downloadUrl
+  delete f.manifest.firmware.source.archive.downloadAsset
+  await f.save()
+  assert.equal((await loadOverview(f.root)).artifactVerified, true)
+  f.manifest.firmware.source.archive.bytes++
+  await f.save()
+  await assert.rejects(loadOverview(f.root), /源码归档大小/)
+})
+
+test('published or legacy bundles need a matching Release page; source links remain paired', async t => {
+  const f = await fixture(t), original = structuredClone(f.manifest)
+  for (const mutate of [
+    m => { delete m.firmware.source.releaseUrl },
+    m => { delete m.firmware.publication; delete m.firmware.source.releaseUrl },
+    m => { m.firmware.publication = 'draft'; m.firmware.source.releaseUrl = 'https://github.com/other/repo/releases/tag/test' },
+    m => { delete m.firmware.source.archive.downloadUrl },
+    m => { delete m.firmware.source.archive.downloadAsset },
+    m => { m.firmware.source.archive.downloadUrl = null },
+    m => { m.firmware.source.archive.downloadUrl = '' },
+  ]) {
+    Object.assign(f.manifest, structuredClone(original)); mutate(f.manifest); await f.save()
+    await assert.rejects(loadOverview(f.root))
+  }
+  Object.assign(f.manifest, structuredClone(original)); delete f.manifest.firmware.publication; await f.save()
+  assert.equal((await loadOverview(f.root)).artifactVerified, true)
 })

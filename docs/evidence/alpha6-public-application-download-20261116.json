@@ -1,0 +1,9 @@
+{
+  "checkedAtUtc": "2026-11-16T05:20:11.479664+00:00",
+  "url": "https://raw.githubusercontent.com/thursdaycapital/ekko-cardputer-adv-stock-lan/a78fc66b7b57b06cd1de8dd990d633d0b497fda7/firmware/ekko-cardputer-next-0x10000.bin",
+  "http": 200,
+  "bytes": 3321072,
+  "sha256": "9208e53b8336523b50a3d49ce5a18f559f9aa79a885bef6df2deaf201c930230",
+  "matchesBundledFirmware": true,
+  "remoteReleaseRequired": false
+}

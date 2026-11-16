@@ -513,7 +513,7 @@
                 },
                 "releaseUrl": {
                   "type": "string",
-                  "description": "公开预发布说明页。",
+                  "description": "正式公开Release页面；published或省略publication时必填，draft可省略，填写时仍严格同仓库同标签。",
                   "minLength": 1,
                   "maxLength": 2048
                 },
@@ -525,7 +525,7 @@
                 },
                 "archive": {
                   "type": "object",
-                  "description": "可选的完整对应源码归档；省略保持旧清单兼容。填写时校验本地普通文件大小、SHA及同仓库同标签精确下载资产，不从网络加载源码。",
+                  "description": "完整对应源码归档，必须随插件包附带且验证实际大小与SHA；可选外链的downloadAsset和downloadUrl必须同时填写或同时省略。省略外链只代表包内提供，不生成未公开下载链接。",
                   "properties": {
                     "path": {
                       "type": "string",
@@ -547,13 +547,13 @@
                     },
                     "downloadAsset": {
                       "type": "string",
-                      "description": "同仓库同 releaseLabel 的精确源码 .tar.gz 资产 basename，不接受斜杠、查询或编码转义。",
+                      "description": "可选，与downloadUrl成对提供的同仓库同标签精确源码资产basename，省略表示源码仅随插件包提供。",
                       "minLength": 8,
                       "maxLength": 256
                     },
                     "downloadUrl": {
                       "type": "string",
-                      "description": "同仓库、同发布标签、同 downloadAsset 的 GitHub Release 下载 URL。",
+                      "description": "可选，与downloadAsset成对提供的同仓库同标签GitHub Release地址；未公开时两项均省略。",
                       "minLength": 1,
                       "maxLength": 2048
                     }
@@ -561,9 +561,7 @@
                   "required": [
                     "path",
                     "bytes",
-                    "sha256",
-                    "downloadAsset",
-                    "downloadUrl"
+                    "sha256"
                   ],
                   "additionalProperties": false
                 }
@@ -572,7 +570,6 @@
                 "repository",
                 "commit",
                 "url",
-                "releaseUrl",
                 "relinkUrl"
               ],
               "additionalProperties": false
@@ -616,6 +613,28 @@
                 "fullMatrixComplete": {
                   "type": "boolean",
                   "description": "原计划全部故障及恢复矩阵是否完成。"
+                },
+                "tokenExpiryRecovery": {
+                  "type": "boolean",
+                  "description": "可选，当前固件是否已在实际M5上通过受控令牌时间过期自动恢复；省略表示未记录。"
+                },
+                "studioRestartRecovery": {
+                  "type": "boolean",
+                  "description": "可选，当前固件是否已在实际M5上通过同入口Studio普通重启恢复；省略表示未记录。"
+                },
+                "physicalAgentCount": {
+                  "type": "integer",
+                  "description": "可选，当前固件已有证据的实体Agent数，不代表固定目录全部可用。",
+                  "minimum": 0,
+                  "maximum": 16
+                },
+                "fiveSecondAutoStopObserved": {
+                  "type": "boolean",
+                  "description": "可选，是否已取得本版同take的wall_limit或sample_limit自动截止证据，独立于用户主观反馈。"
+                },
+                "testsPaused": {
+                  "type": "boolean",
+                  "description": "可选，用户是否已要求暂停剩余实体测试；不影响包内文件校验。"
                 }
               },
               "required": [
@@ -627,6 +646,14 @@
                 "fullMatrixComplete"
               ],
               "additionalProperties": false
+            },
+            "publication": {
+              "type": "string",
+              "description": "可选发布状态，省略等同published；draft可省略公开Release页面但应用仍必须有固定公开下载地址。",
+              "enum": [
+                "draft",
+                "published"
+              ]
             }
           },
           "required": [
@@ -1028,7 +1055,7 @@
                 },
                 "releaseUrl": {
                   "type": "string",
-                  "description": "公开预发布说明页。",
+                  "description": "正式公开Release页面；published或省略publication时必填，draft可省略，填写时仍严格同仓库同标签。",
                   "minLength": 1,
                   "maxLength": 2048
                 },
@@ -1040,7 +1067,7 @@
                 },
                 "archive": {
                   "type": "object",
-                  "description": "可选的完整对应源码归档；省略保持旧清单兼容。填写时校验本地普通文件大小、SHA及同仓库同标签精确下载资产，不从网络加载源码。",
+                  "description": "完整对应源码归档，必须随插件包附带且验证实际大小与SHA；可选外链的downloadAsset和downloadUrl必须同时填写或同时省略。省略外链只代表包内提供，不生成未公开下载链接。",
                   "properties": {
                     "path": {
                       "type": "string",
@@ -1062,13 +1089,13 @@
                     },
                     "downloadAsset": {
                       "type": "string",
-                      "description": "同仓库同 releaseLabel 的精确源码 .tar.gz 资产 basename，不接受斜杠、查询或编码转义。",
+                      "description": "可选，与downloadUrl成对提供的同仓库同标签精确源码资产basename，省略表示源码仅随插件包提供。",
                       "minLength": 8,
                       "maxLength": 256
                     },
                     "downloadUrl": {
                       "type": "string",
-                      "description": "同仓库、同发布标签、同 downloadAsset 的 GitHub Release 下载 URL。",
+                      "description": "可选，与downloadAsset成对提供的同仓库同标签GitHub Release地址；未公开时两项均省略。",
                       "minLength": 1,
                       "maxLength": 2048
                     }
@@ -1076,9 +1103,7 @@
                   "required": [
                     "path",
                     "bytes",
-                    "sha256",
-                    "downloadAsset",
-                    "downloadUrl"
+                    "sha256"
                   ],
                   "additionalProperties": false
                 }
@@ -1087,7 +1112,6 @@
                 "repository",
                 "commit",
                 "url",
-                "releaseUrl",
                 "relinkUrl"
               ],
               "additionalProperties": false
@@ -1131,6 +1155,28 @@
                 "fullMatrixComplete": {
                   "type": "boolean",
                   "description": "原计划全部故障及恢复矩阵是否完成。"
+                },
+                "tokenExpiryRecovery": {
+                  "type": "boolean",
+                  "description": "可选，当前固件是否已在实际M5上通过受控令牌时间过期自动恢复；省略表示未记录。"
+                },
+                "studioRestartRecovery": {
+                  "type": "boolean",
+                  "description": "可选，当前固件是否已在实际M5上通过同入口Studio普通重启恢复；省略表示未记录。"
+                },
+                "physicalAgentCount": {
+                  "type": "integer",
+                  "description": "可选，当前固件已有证据的实体Agent数，不代表固定目录全部可用。",
+                  "minimum": 0,
+                  "maximum": 16
+                },
+                "fiveSecondAutoStopObserved": {
+                  "type": "boolean",
+                  "description": "可选，是否已取得本版同take的wall_limit或sample_limit自动截止证据，独立于用户主观反馈。"
+                },
+                "testsPaused": {
+                  "type": "boolean",
+                  "description": "可选，用户是否已要求暂停剩余实体测试；不影响包内文件校验。"
                 }
               },
               "required": [
@@ -1142,6 +1188,14 @@
                 "fullMatrixComplete"
               ],
               "additionalProperties": false
+            },
+            "publication": {
+              "type": "string",
+              "description": "可选发布状态，省略等同published；draft可省略公开Release页面但应用仍必须有固定公开下载地址。",
+              "enum": [
+                "draft",
+                "published"
+              ]
             }
           },
           "required": [

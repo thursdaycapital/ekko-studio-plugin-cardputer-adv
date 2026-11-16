@@ -71,3 +71,11 @@
 `tests/backend.test.mjs` 覆盖真实调用者/Profile 隔离、非法身份与输入、取消、坏存储、URL 限制、官方响应裁剪与错误、释放及重复加载、实际包内固件、篡改、路径穿越、符号链接及错误脱敏。`tests/contracts.test.mjs` 验证实际四个 RPC 与共享存储模型。以上属于主机测试，不是 Cardputer-Adv 实机测试。
 
 `firmware.source.archive` 可选对象声明对应源码归档的 `path`、`bytes`、`sha256`、`downloadAsset`、`downloadUrl`。源码下载同样必须使用来源仓库和 releaseLabel 的精确 `.tar.gz` basename；本地归档必须是 firmware/ 内普通文件，大小和 SHA 一致。省略保持旧清单兼容。后端不展开归档、不执行构建、不从网络获取材料；该 SHA 校验不代替独立的源码对应性与许可审核。
+
+## alpha.6 的草稿与源码分发
+
+`firmware.publication` 可选，值为 `draft` 或 `published`；省略保持旧清单的 `published` 语义。正式发布清单必须包含同仓库、同标签的 `source.releaseUrl`。草稿可以省略它；若填写仍执行同样校验，前端不展示草稿的发布页链接。应用 `downloadUrl` 仍必填，并固定到已公开源码提交，不指向需要登录才能取回的 Release 草稿。
+
+源码归档 `path/bytes/sha256` 保持必填并校验实际文件；`downloadAsset` 与 `downloadUrl` 改为成对可选。二者均省略时，源码仅随插件包提供，页面展示包内路径和摘要；只填一项、空字符串或 null 均拒绝。提供外链时仍执行原先的仓库、标签和资产名限制。此变更不增加权限、RPC、HTTP 服务或设备操作，不改变设置存储。
+
+`validation` 新增可选布尔字段 `tokenExpiryRecovery`、`studioRestartRecovery`、`fiveSecondAutoStopObserved`、`testsPaused`，及 0～16 的 `physicalAgentCount`。这些字段仅表达已保存的当前固件实测范围，省略时不显示新状态；不从目录数量、插件页面检查或固件版本推断通过。用户反馈自动停止与同轮自动截止日志分别记录。alpha.6 当前仅 Codex 实体路由已有证据，其余测试暂停；`allAgentsPhysicallyValidated` 和 `fullMatrixComplete` 保持 false。
