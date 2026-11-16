@@ -57,7 +57,7 @@ class Element {
 }
 
 async function mountedClient({ view = 'preferences', failure, failOn = 'save-settings', overview,
-  usbInfo = { available: true, reason: '', hostPlatform: 'fixture-server' }, usbPorts = [], usbJob, confirm = true, rpc }, verify) {
+  usbInfo = { available: true, reason: '', hostPlatform: 'fixture-server' }, usbPorts = [], usbJob, confirm = true, rpc, plugin, locale = 'zh-CN' }, verify) {
   overview ??= { ...JSON.parse(await readFile(new URL('../firmware/release.json', import.meta.url), 'utf8')), artifactVerified: true }
   const doc = {
     createElement(tag) { return new Element(tag, doc) },
@@ -68,7 +68,7 @@ async function mountedClient({ view = 'preferences', failure, failOn = 'save-set
   const confirmations = []
   const controller = new AbortController()
   const dispose = await mount(root, {
-    view, locale: 'zh-CN', signal: controller.signal, lifecycle: { add() {} },
+    view, locale, plugin, signal: controller.signal, lifecycle: { add() {} },
     ui: { navigate() { assert.fail('no navigation expected') }, async confirm(message) { confirmations.push(message); return typeof confirm === 'function' ? confirm(message) : confirm } },
     rpc: { async call(name, input) {
       calls.push({ name, input })
@@ -98,6 +98,7 @@ const usbJob = (phase = 'queued', fields = {}) => ({
   applicationVerified: false, preservedRegionsVerified: false, resetConfirmed: false, resultUnknown: false, errorCode: '', ...fields,
 })
 const findButton = (root, label) => root.find(node => node.tagName === 'button' && node.textContent === label)
+const defaultVisibleText = node => node.hidden || node.tagName === 'style' ? '' : node.tagName === 'details' && !node.open ? defaultVisibleText(node.children[0]) : node.text + node.children.map(defaultVisibleText).join('')
 async function prepareUsb(root) {
   await findButton(root, '扫描 USB 设备').click()
   const port = root.find(node => node.tagName === 'select')
@@ -111,15 +112,17 @@ async function prepareUsb(root) {
 test('USB mount checks server capability without scanning or opening a device', async () => {
   await mountedClient({ view: 'firmware' }, async (root, calls) => {
     assert.deepEqual(calls, [{ name: 'get-overview', input: null }, { name: 'usb-info', input: null }])
-    assert.match(root.textContent, /数据线须插到运行 Studio 服务端/)
-    assert.match(root.textContent, /NAS／远程网页/)
+    assert.match(root.textContent, /数据线接到运行 Studio 的电脑/)
+    assert.match(root.textContent, /使用 NAS 版 Studio/)
     assert.match(root.textContent, /扫描结果两分钟有效，过期请重新扫描/)
-    assert.equal(findButton(root, '刷入 / 升级固件').disabled, true)
+    assert.equal(findButton(root, '升级固件').disabled, true)
+    assert.equal(findButton(root, '刷新任务状态')?.hidden, true)
+    assert.equal(findButton(root, '取消任务').hidden, true)
   })
   await mountedClient({ view: 'firmware', usbInfo: { available: false, reason: 'Fixture dependency missing', hostPlatform: 'fixture-nas' } }, async (root, calls) => {
     assert.match(root.textContent, /Fixture dependency missing/)
     assert.equal(findButton(root, '扫描 USB 设备').disabled, true)
-    assert.equal(findButton(root, '刷入 / 升级固件').disabled, true)
+    assert.equal(findButton(root, '升级固件').disabled, true)
     assert.equal(calls.length, 2)
   })
 })
@@ -130,7 +133,7 @@ test('USB capability errors preserve firmware metadata and offer explicit retry 
     assert.doesNotMatch(root.textContent, /API Error 503:/)
     assert.match(root.textContent, /SHA-256/)
     assert.equal(findButton(root, '扫描 USB 设备').disabled, true)
-    assert.equal(findButton(root, '刷新任务状态').disabled, false)
+    assert.equal(findButton(root, '重试').disabled, false)
     assert.deepEqual(calls.map(call => call.name), ['get-overview', 'usb-info'])
   })
 })
@@ -138,14 +141,15 @@ test('USB capability errors preserve firmware metadata and offer explicit retry 
 test('USB requires opaque scanned port, board acknowledgement and SDK confirmation; cancellation writes nothing', async () => {
   await mountedClient({ view: 'firmware', usbPorts: [usbPort], confirm: false }, async (root, calls, { confirmations }) => {
     await prepareUsb(root)
-    await findButton(root, '刷入 / 升级固件').click()
+    await findButton(root, '升级固件').click()
     assert.equal(confirmations.length, 1)
-    assert.match(confirmations[0], /0x10000/)
-    assert.match(confirmations[0], /SHA-256: [a-f0-9]{64}/)
+    assert.match(confirmations[0], /仅更新 Ekko 应用，原厂工具和设备设置会保留/)
+    assert.match(confirmations[0], /版本: v[0-9]/)
+    assert.doesNotMatch(confirmations[0], /SHA-256: [a-f0-9]{64}/)
     assert.match(confirmations[0], /私有完整备份/)
     assert.match(confirmations[0], /中断不会自动回滚/)
     assert.equal(calls.filter(call => call.name === 'usb-start-update').length, 0)
-    assert.equal(findButton(root, '刷入 / 升级固件').disabled, false)
+    assert.equal(findButton(root, '升级固件').disabled, false)
   })
 })
 
@@ -156,7 +160,7 @@ test('USB confirmation and submission each exclude duplicate clicks; committed j
   await mountedClient({ view: 'firmware', usbPorts: [usbPort], confirm: () => confirming,
     rpc: async name => name === 'usb-start-update' ? starting : undefined }, async (root, calls, { confirmations }) => {
     await prepareUsb(root)
-    const start = findButton(root, '刷入 / 升级固件')
+    const start = findButton(root, '升级固件')
     const pending = start.click()
     await start.click()
     assert.equal(confirmations.length, 1)
@@ -185,7 +189,7 @@ test('unknown USB submission never retries until explicit current-job lookup, th
     if (name === 'usb-start-update' && fail) throw new Error('API Error 503: Fixture response lost')
   } }, async (root, calls, { confirmations }) => {
     await prepareUsb(root)
-    const start = findButton(root, '刷入 / 升级固件')
+    const start = findButton(root, '升级固件')
     await start.click()
     assert.match(root.textContent, /提交结果未确认/)
     assert.match(root.textContent, /Fixture response lost/)
@@ -206,7 +210,7 @@ test('unknown USB submission never retries until explicit current-job lookup, th
 test('USB currentJob remount resumes observation without scanning, starting or cancellation', async () => {
   await mountedClient({ view: 'firmware', usbInfo: { available: true, reason: '', hostPlatform: 'fixture', currentJob: usbJob('backing-up') } }, async (root, calls) => {
     assert.match(root.textContent, /正在备份/)
-    assert.equal(findButton(root, '刷入 / 升级固件').disabled, true)
+    assert.equal(findButton(root, '升级固件').disabled, true)
     assert.equal(findButton(root, '取消任务').disabled, false)
     assert.deepEqual(calls.map(call => call.name), ['get-overview', 'usb-info'])
   })
@@ -217,7 +221,7 @@ test('USB disposal while confirmation is pending prevents start; closing a submi
   const confirm = new Promise(resolve => { release = resolve })
   await mountedClient({ view: 'firmware', usbPorts: [usbPort], confirm: () => confirm }, async (root, calls, { controller }) => {
     await prepareUsb(root)
-    const pending = findButton(root, '刷入 / 升级固件').click()
+    const pending = findButton(root, '升级固件').click()
     controller.abort()
     release(true)
     await pending
@@ -236,17 +240,17 @@ test('USB completion describes verification only, and incomplete or unknown resu
     [usbJob('completed', { progress: 100, backupSaved: true, applicationVerified: true }), false],
     [usbJob('failed', { resultUnknown: true, errorCode: 'fixture-write-interrupted' }), false],
   ]) await mountedClient({ view: 'firmware', usbInfo: { available: true, hostPlatform: 'fixture', currentJob: job } }, async root => {
-    assert.equal(root.textContent.includes('写入和保留区校验通过。'), success)
+    assert.equal(root.textContent.includes('固件升级完成，原厂工具和设置已保留。'), success)
     assert.doesNotMatch(root.textContent, /启动成功|语音已通过/)
     if (success) assert.match(root.textContent, /请在 M5 原厂菜单选择 EkkoStudio/)
-    if (job.resultUnknown) assert.equal(findButton(root, '刷入 / 升级固件').disabled, true)
+    if (job.resultUnknown) assert.equal(findButton(root, '升级固件').disabled, true)
   })
 })
 
 test('unknown terminal results need explicit recheck confirmation before a fresh scan and board acknowledgement', async () => {
   const unknownJob = usbJob('failed', { resultUnknown: true, backupSaved: true, errorCode: 'USB_VERIFY_FAILED' })
   await mountedClient({ view: 'firmware', usbInfo: { available: true, hostPlatform: 'fixture', currentJob: unknownJob }, usbPorts: [usbPort], confirm: false }, async (root, calls, { confirmations }) => {
-    assert.equal(findButton(root, '刷入 / 升级固件').disabled, true)
+    assert.equal(findButton(root, '升级固件').disabled, true)
     await findButton(root, '重新核对并扫描').click()
     assert.equal(confirmations.length, 1)
     assert.match(confirmations[0], /结果仍未知/)
@@ -254,7 +258,7 @@ test('unknown terminal results need explicit recheck confirmation before a fresh
     assert.match(confirmations[0], /私有备份/)
     assert.match(confirmations[0], /不自动重试/)
     assert.equal(calls.some(call => call.name === 'usb-list-ports'), false)
-    assert.equal(findButton(root, '刷入 / 升级固件').disabled, true)
+    assert.equal(findButton(root, '升级固件').disabled, true)
   })
   await mountedClient({ view: 'firmware', usbInfo: { available: true, hostPlatform: 'fixture', currentJob: unknownJob }, usbPorts: [usbPort], usbJob: usbJob('queued', { id: 'fixture-job-2' }) }, async (root, calls, { confirmations }) => {
     await findButton(root, '重新核对并扫描').click()
@@ -264,11 +268,11 @@ test('unknown terminal results need explicit recheck confirmation before a fresh
     const board = root.find(node => node.tagName === 'input' && node.type === 'checkbox')
     assert.equal(port.value, '')
     assert.equal(board.checked, false)
-    assert.equal(findButton(root, '刷入 / 升级固件').disabled, true)
+    assert.equal(findButton(root, '升级固件').disabled, true)
     assert.match(root.textContent, /上次更新结果仍未知/)
     port.value = usbPort.id; await port.change()
     board.checked = true; await board.change()
-    await findButton(root, '刷入 / 升级固件').click()
+    await findButton(root, '升级固件').click()
     assert.equal(confirmations.length, 2, 'rescanning never replaces the final flash confirmation')
     assert.equal(calls.filter(call => call.name === 'usb-start-update').length, 1)
     assert.match(root.textContent, /上次更新结果仍未知/, 'a new task does not erase the previous unknown-result warning')
@@ -282,10 +286,10 @@ test('recheck cannot bypass the server physical lock and cannot scan after its c
     const port = root.find(node => node.tagName === 'select')
     const board = root.find(node => node.tagName === 'input' && node.type === 'checkbox')
     port.value = usbPort.id; await port.change(); board.checked = true; await board.change()
-    await findButton(root, '刷入 / 升级固件').click()
+    await findButton(root, '升级固件').click()
     assert.match(root.textContent, /USB_BUSY/)
     assert.match(root.textContent, /上次更新结果仍未知/)
-    assert.equal(findButton(root, '刷入 / 升级固件').disabled, true)
+    assert.equal(findButton(root, '升级固件').disabled, true)
     assert.equal(calls.filter(call => call.name === 'usb-start-update').length, 1)
   })
   let release
@@ -311,7 +315,7 @@ test('USB polls serially, stops on terminal state and never cancels when dispose
     assert.equal(statusCalls, 1, 'a pending status read is never overlapped')
     release(usbJob('completed', { backupSaved: true, applicationVerified: true, preservedRegionsVerified: true }))
     await new Promise(resolve => setImmediate(resolve))
-    assert.match(root.textContent, /写入和保留区校验通过/)
+    assert.match(root.textContent, /固件升级完成，原厂工具和设置已保留/)
     t.mock.timers.tick(600_000)
     assert.equal(statusCalls, 1)
     controller.abort()
@@ -382,7 +386,7 @@ test('guide uses optional bundled capabilities without requiring plugin preferen
   const overview = { ...JSON.parse(await readFile(new URL('../firmware/release.json', import.meta.url), 'utf8')), artifactVerified: true }
   delete overview.capabilities.explicitAgentModes; delete overview.capabilities.shortG0Returns
   await mountedClient({ view: 'guide', overview }, async (root, calls) => {
-    assert.match(root.textContent, /插件是可选的管理入口/)
+    assert.match(root.textContent, /完成一次绑定/)
     assert.match(root.textContent, /已有有效绑定可跳过/)
     assert.doesNotMatch(root.textContent, /首页选择并保存 Studio模型/)
     assert.deepEqual(calls, [{ name: 'get-overview', input: null }])
@@ -394,35 +398,45 @@ test('guide uses optional bundled capabilities without requiring plugin preferen
   })
 })
 
-test('firmware details display the bundled version and recorded validation state', async () => {
+test('firmware keeps upgrade primary and source/checksum details collapsed without acceptance telemetry', async () => {
   const overview = { ...JSON.parse(await readFile(new URL('../firmware/release.json', import.meta.url), 'utf8')), artifactVerified: true }
   overview.firmware.version = 'synthetic-future-release'
   overview.firmware.files[0].bytes = 123456
-  overview.pluginSdk.firmwareOnThisHostPhysicallyValidated = true
-  overview.firmware.validation.allAgentsPhysicallyValidated = true
-  overview.firmware.validation.fullMatrixComplete = true
+  overview.pluginSdk.firmwareOnThisHostPhysicallyValidated = false
+  overview.firmware.validation.allAgentsPhysicallyValidated = false
+  overview.firmware.validation.fullMatrixComplete = false
   await mountedClient({ view: 'firmware', overview }, async root => {
-    assert.match(root.textContent, /synthetic-future-release/)
-    assert.match(root.textContent, /123,456/)
-    assert.doesNotMatch(root.textContent, /此 SDK 宿主版本尚未完成|16 Agent 尚未逐一|完整恢复与异常测试矩阵尚未完成/)
+    const advanced = root.find(node => node.tagName === 'details')
+    assert(advanced)
+    assert.notEqual(advanced.open, true)
+    assert.equal(advanced.children[0].tagName, 'summary')
+    assert.equal(advanced.children[0].textContent, '高级与开源信息')
+    assert.match(advanced.textContent, /synthetic-future-release/)
+    assert.match(advanced.textContent, /123,456/)
+    assert.match(advanced.textContent, /第三方许可与重新链接说明/)
+    assert.equal(advanced.find(node => node.getAttribute?.('aria-label') === 'SHA-256').value, overview.firmware.files[0].sha256)
+    assert.doesNotMatch(root.textContent, /文字实机记录|语音实机记录|SDK 基线|实体测试|用户已确认|本版自动截止|1 \/ 16/)
+    assert.doesNotMatch(defaultVisibleText(root), /SHA-256|0x10000|fixture-server/)
+    assert.match(root.textContent, /预览版/)
+    assert(findButton(root, '升级固件'))
   })
 })
 
-test('draft firmware displays bundled source and separates feedback from observed recovery', async () => {
+test('unpublished release links stay hidden while bundled source and LAN limitations remain accessible', async () => {
   const overview = { ...JSON.parse(await readFile(new URL('../firmware/release.json', import.meta.url), 'utf8')), artifactVerified: true }
   overview.firmware.publication = 'draft'
   delete overview.firmware.source.releaseUrl
   delete overview.firmware.source.archive.downloadUrl
   delete overview.firmware.source.archive.downloadAsset
   await mountedClient({ view: 'firmware', overview }, async root => {
-    assert.match(root.textContent, /Release 尚未公开/)
-    assert.match(root.textContent, /对应源码已随插件包附带/)
-    assert.match(root.textContent, /1 \/ 16/)
-    assert.match(root.textContent, /凭证过期自动恢复/)
-    assert.match(root.textContent, /本版自动截止日志待核对/)
-    assert.match(root.textContent, /实体测试已按用户要求暂停/)
+    assert.match(root.textContent, /完整固件源码随安装包提供/)
+    assert.doesNotMatch(root.textContent, /Release 尚未公开|凭证过期自动恢复|实体测试已按用户要求暂停|undefined/)
     assert.ok(!root.find(node => node.getAttribute?.('aria-label') === '发布页地址'))
-    assert.doesNotMatch(root.textContent, /undefined/)
+    assert.ok(!root.find(node => node.getAttribute?.('aria-label') === '包内源码文件'))
+  })
+  await mountedClient({ view: 'guide', overview }, async root => {
+    assert.match(root.textContent, /当前固件不支持跨网远程/)
+    assert.match(root.textContent, /电脑需要保持开机/)
   })
 })
 
@@ -452,5 +466,42 @@ test('load RPC unwraps only a leading 400–599 SDK envelope with a nonempty rea
     await mountedClient({ view: 'firmware', failOn: 'get-overview', failure: new Error(input) }, async root => {
       assert.equal(root.find(node => node.attributes.get('role') === 'alert').textContent, expected)
     })
+  })
+})
+
+
+test('product image accepts only supported host data icons and falls back to its text identity', async () => {
+  const icon = 'data:image/png;base64,AAAA'
+  await mountedClient({ view: 'guide', plugin: { icon } }, async root => {
+    const image = root.find(node => node.tagName === 'img')
+    assert.equal(image.src, icon)
+    assert.equal(image.alt, 'M5Stack Cardputer-Adv')
+    for (const handler of image.listeners.get('error') ?? []) handler()
+    assert.equal(root.find(node => node.tagName === 'img'), undefined)
+    assert.match(root.textContent, /M5Stack Cardputer-Adv/)
+  })
+  for (const icon of ['https://example.com/icon.png', '/assets/icon.png', 'data:image/svg+xml;base64,PHN2Zy8+', 'data:image/png;base64,?invalid', undefined]) {
+    await mountedClient({ view: 'guide', plugin: { icon } }, async root => {
+      assert.equal(root.find(node => node.tagName === 'img'), undefined)
+      assert.match(root.textContent, /M5Stack Cardputer-Adv/)
+    })
+  }
+})
+
+
+test('USB keeps readable failure reasons visible and hides internal progress, code and platform details', async () => {
+  await mountedClient({ view: 'firmware', usbInfo: { available: true, hostPlatform: 'fixture-server', currentJob: usbJob('backing-up', { message: 'ROM 0x10000 internal progress' }) } }, async root => {
+    assert.match(defaultVisibleText(root), /正在备份/)
+    assert.doesNotMatch(defaultVisibleText(root), /ROM|0x10000|fixture-server/)
+  })
+  const reason = '原厂或设置区域核对失败；已保留私有备份，没有请求重启。'
+  await mountedClient({ view: 'firmware', usbInfo: { available: true, hostPlatform: 'fixture-server', currentJob: usbJob('failed', { errorCode: 'FUTURE_USB_ERROR', message: reason }) } }, async root => {
+    assert.match(defaultVisibleText(root), /原厂或设置区域核对失败/)
+    assert.doesNotMatch(defaultVisibleText(root), /FUTURE_USB_ERROR|fixture-server/)
+    assert.match(root.find(node => node.tagName === 'details').textContent, /FUTURE_USB_ERROR|fixture-server/)
+  })
+  await mountedClient({ view: 'firmware', usbInfo: { available: true, hostPlatform: 'fixture-server', currentJob: usbJob('failed', { errorCode: 'FUTURE_USB_ERROR', message: '' }) } }, async root => {
+    assert.match(defaultVisibleText(root), /未收到具体错误原因/)
+    assert.match(root.find(node => node.tagName === 'details').textContent, /FUTURE_USB_ERROR/)
   })
 })

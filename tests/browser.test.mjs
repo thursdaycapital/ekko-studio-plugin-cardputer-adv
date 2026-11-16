@@ -7,19 +7,19 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { after, before, test } from 'node:test'
 
-let browser, server, origin, source, overview, manifest
+let browser, server, origin, source, overview, manifest, productIcon
 const consoles = []
 const csp = "default-src 'none'; script-src 'unsafe-inline' blob:; style-src 'unsafe-inline'; img-src data: blob:; connect-src 'none'"
 
 function fixture() {
-  const data = { overview, source, csp }
+  const data = { overview, source, csp, icon: productIcon }
   const bootstrap = `
     const fixture = ${JSON.stringify(data).replaceAll('<', '\\u003c')};
     const module = await import(URL.createObjectURL(new Blob([fixture.source], {type:'text/javascript'})));
     const root = document.getElementById('root');
     let controller, dispose;
     const state = {
-      calls: [], navigations: [], failures: {}, pending: {}, holds: [], confirmations: [], confirmResult: true, holdConfirm: false,
+      icon: fixture.icon, calls: [], navigations: [], failures: {}, pending: {}, holds: [], confirmations: [], confirmResult: true, holdConfirm: false,
       overview: structuredClone(fixture.overview),
       usbInfo: {available:true,reason:'',hostPlatform:'fixture-server'},
       usbPorts: [{id:'opaque-fixture-port',label:'Fixture USB <img src=x onerror=alert(1)>',vendorId:'303a',productId:'1001'}],
@@ -33,7 +33,7 @@ function fixture() {
         const current = controller;
         const ctx = {
           locale, view, slot:view==='preferences'?'settings':'workspace',
-          plugin:{id:'m5stack-cardputer-adv'},identity:{userId:1,profile:'test'},
+          plugin:{id:'m5stack-cardputer-adv',icon:state.icon},identity:{userId:1,profile:'test'},
           signal:current.signal, lifecycle:{add(fn){return fn}},
           rpc:{call:async(name,input)=>{
             state.calls.push({name,input});
@@ -66,7 +66,7 @@ function fixture() {
     window.__test=state;
     window.__ready=await state.open('devices');
   `
-  const inner = `<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${csp}"><style>:root{--text-primary:#202a29;--text-secondary:#596360;--text-muted:#707b77;--bg-card:#fbfaf5;--bg-secondary:#efeee6;--bg-input:#fffef9;--border-color:#c8cec4;--border-light:#dbe0d6;--accent-primary:#247368;--success:#2e7562;--error:#a8372d;--warning:#a67828;--font-family:'Georgia',serif;--font-size-base:14px;--line-height:1.6}body{margin:0;background:#f6f5ed}</style><div id="root"></div><script type="module">${bootstrap.replaceAll('</script', '<\\/script')}</script>`
+  const inner = `<!doctype html><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${csp}"><style>:root{--text-primary:#202a29;--text-secondary:#596360;--text-muted:#707b77;--bg-card:#fbfaf5;--bg-secondary:#efeee6;--bg-input:#fffef9;--border-color:#c8cec4;--border-light:#dbe0d6;--accent-primary:#247368;--success:#2e7562;--error:#a8372d;--warning:#a67828;--font-family:'Georgia',serif;--font-size-base:14px;--line-height:1.6}body{margin:0;background:#f6f5ed}</style><main id="root"></main><script type="module">${bootstrap.replaceAll('</script', '<\\/script')}</script>`
   return `<!doctype html><meta charset="utf-8"><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%}</style><iframe title="Plugin sandbox" sandbox="allow-scripts" srcdoc="${inner.replaceAll('&','&amp;').replaceAll('"','&quot;')}"></iframe>`
 }
 
@@ -74,6 +74,7 @@ before(async () => {
   source = await readFile(new URL('../client.mjs', import.meta.url), 'utf8')
   overview = { ...JSON.parse(await readFile(new URL('../firmware/release.json', import.meta.url), 'utf8')), artifactVerified: true }
   manifest = JSON.parse(await readFile(new URL('../plugin.json', import.meta.url), 'utf8'))
+  productIcon = `data:image/webp;base64,${(await readFile(new URL('../assets/cardputer-adv.webp', import.meta.url))).toString('base64')}`
   const moduleId = process.env.PLAYWRIGHT_MODULE ? pathToFileURL(path.resolve(process.env.PLAYWRIGHT_MODULE)).href : 'playwright'
   const imported = await import(moduleId)
   const chromium = imported.chromium ?? imported.default?.chromium
@@ -112,15 +113,17 @@ async function screenshot(page, name) {
 test('opaque sandbox loads devices; native and workspace navigation use SDK paths', async () => {
   const { page, frame } = await pageFixture()
   try {
+    assert.equal(await frame.locator('main').count(), 1)
+    assert.equal(await frame.locator('main main').count(), 0)
     assert.equal(await page.locator('iframe').getAttribute('sandbox'), 'allow-scripts')
     assert.equal(await frame.evaluate(() => window.origin), 'null')
-    assert.equal((await frame.locator('thead').innerText()).trim(), '设备名称\t设备码末六位\t局域网\t电脑中继\t登记渠道')
+    assert.equal((await frame.locator('thead').innerText()).trim(), '设备名称\t设备码末六位\t局域网')
     assert.match(await frame.locator('tbody').innerText(), /Test MCU <img src=x onerror=alert\(1\)>/)
     assert.equal(await frame.locator('tbody img').count(), 0)
     const cells = frame.locator('tbody .adv-state')
     assert.equal(await cells.nth(0).getAttribute('data-online'), 'true')
-    assert.equal(await cells.nth(1).getAttribute('data-online'), 'false')
-    assert.match(await frame.locator('main').innerText(), /不能证明 M5 正在走远程/)
+    assert.equal(await cells.count(), 1)
+    assert.match(await frame.locator('.adv-content').innerText(), /当前固件不支持跨网远程/)
     await frame.getByRole('button', { name: '打开原生设备管理', exact: true }).click()
     await frame.getByRole('button', { name: '固件', exact: true }).click()
     assert.deepEqual(await frame.evaluate(() => __test.navigations), ['/hermes/connections?tab=mcu', '/studio/plugins/m5stack-cardputer-adv/firmware'])
@@ -170,7 +173,7 @@ test('preferences preserve a failed draft, discard changes, save canonical origi
     assert.equal(await frame.getByRole('textbox', { name: '设备原生管理页' }).count(), 1)
     await frame.getByRole('button', { name: '选中文本' }).click()
     assert.deepEqual(await native.evaluate(node => [node.selectionStart,node.selectionEnd]), [0,'http://cardputer.local/device'.length])
-    assert.match(await frame.locator('main').innerText(), /Ctrl\/Cmd\+C 手动复制/)
+    assert.match(await frame.locator('.adv-content').innerText(), /Ctrl\/Cmd\+C 手动复制/)
     assert.equal(await frame.locator('a[download],input[type=password]').count(), 0)
     await screenshot(page, 'preferences-saved-fixture-sandbox.png')
     await frame.evaluate(() => __test.open('devices'))
@@ -178,29 +181,41 @@ test('preferences preserve a failed draft, discard changes, save canonical origi
   } finally { await page.close() }
 })
 
-test('firmware and English guide render real metadata and remain usable on narrow screens', async () => {
+test('firmware prioritizes updating, keeps technical details collapsed, and works on narrow screens', async () => {
   const { page, frame } = await pageFixture()
   try {
     await frame.evaluate(() => __test.open('firmware'))
-    assert.match(await frame.locator('main').innerText(), /仅适用于既有双固件布局/)
-    assert.match(await frame.locator('main').innerText(), /0x10000/)
-    assert.match(await frame.locator('main').innerText(), /0x330000/)
+    const advanced = frame.locator('details.adv-advanced')
+    assert.equal(await advanced.getAttribute('open'), null)
+    assert.equal(await frame.locator('.adv-usb progress').isVisible(), false)
+    const publicText = await frame.locator('.adv-content').innerText()
+    assert.match(publicText, /仅适用于既有双固件布局/)
+    assert.match(publicText, /预览版/)
+    assert.match(publicText, /保留原厂工具与设备设置/)
+    assert.doesNotMatch(publicText, /0x10000|0x330000|SHA-256|Release 尚未公开|包内源码文件|SDK|实机记录|实体测试|1 \/ 16|fixture-server/)
+    assert.equal(await frame.getByRole('button', { name: '升级固件', exact: true }).isVisible(), true)
+    await advanced.locator('summary').evaluate(node => node.scrollIntoView({ block: 'center' }))
+    await advanced.getByText('高级与开源信息', { exact: true }).click()
+    await frame.waitForFunction(() => document.querySelector('details.adv-advanced')?.open === true)
+    assert.equal(await advanced.getAttribute('open'), '')
+    assert.match(await advanced.innerText(), /0x10000/)
+    assert.match(await advanced.innerText(), /0x330000/)
+    assert.match(await advanced.innerText(), /第三方许可与重新链接说明/)
     assert.equal(await frame.getByRole('textbox', { name: 'SHA-256', exact: true }).inputValue(), overview.firmware.files[0].sha256)
     assert.equal(await frame.getByRole('textbox', { name: '公开固定下载地址' }).inputValue(), overview.firmware.files[0].downloadUrl)
+    assert.equal(await frame.getByRole('textbox', { name: '重新链接说明' }).inputValue(), overview.firmware.source.relinkUrl)
     if (overview.firmware.publication === 'draft') {
-      assert.match(await frame.locator('main').innerText(), /Release 尚未公开/)
       assert.equal(await frame.getByRole('textbox', { name: '发布页地址', exact: true }).count(), 0)
-      assert.equal(await frame.getByRole('textbox', { name: '包内源码文件', exact: true }).inputValue(), overview.firmware.source.archive.path)
+      assert.equal(await frame.getByRole('textbox', { name: '包内源码文件', exact: true }).count(), 0)
       assert.equal(await frame.getByRole('textbox', { name: '源码 SHA-256', exact: true }).inputValue(), overview.firmware.source.archive.sha256)
     }
-    assert((await frame.locator('main').innerText()).includes(`Studio ${overview.pluginSdk.hostVersion}`))
-    assert.equal((await frame.locator('main').innerText()).includes('尚未完成 M5 实机验收'), !overview.pluginSdk.firmwareOnThisHostPhysicallyValidated)
-    await screenshot(page, 'firmware-sandbox.png')
+    await screenshot(page, 'firmware-advanced-sandbox.png')
     await frame.evaluate(() => __test.open('guide', 'en-US'))
-    assert.match(await frame.locator('main').innerText(), /Keyboard reference/)
-    assert.match(await frame.locator('main').innerText(), /Fn \+ Space/)
-    assert.match(await frame.locator('main').innerText(), /up to 5 seconds/)
-    assert.match(await frame.locator('main').innerText(), /needs no SD card/)
+    assert.match(await frame.locator('.adv-content').innerText(), /Keyboard reference/)
+    assert.match(await frame.locator('.adv-content').innerText(), /Fn \+ Space/)
+    assert.match(await frame.locator('.adv-content').innerText(), /up to 5 seconds/)
+    assert.match(await frame.locator('.adv-content').innerText(), /No SD card needed/)
+    assert.match(await frame.locator('.adv-content').innerText(), /Remote access is not supported/)
     await page.setViewportSize({ width: 360, height: 780 })
     assert.equal(await frame.evaluate(() => document.documentElement.scrollWidth > innerWidth), false)
     assert.equal(await frame.getByRole('button', { name: 'Preferences', exact: true }).isVisible(), true)
@@ -213,11 +228,12 @@ test('firmware and English guide render real metadata and remain usable on narro
     await frame.evaluate(() => __test.open('devices', 'en-US'))
     assert.equal(await frame.evaluate(() => document.documentElement.scrollWidth > innerWidth), false)
     assert.equal(await frame.locator('.adv').evaluate(node=>getComputedStyle(node).color), 'rgb(226, 230, 221)')
+    assert.doesNotMatch(await frame.locator('.adv-content').innerText(), /Desktop relay|Official|Unofficial|hardware model/)
     await screenshot(page, 'devices-narrow-dark-fixture-sandbox.png')
   } finally { await page.close() }
 })
 
-test('guide and validation messages follow the bundled capabilities rather than a release number', async () => {
+test('guide controls follow capabilities while developer validation stays out of product pages', async () => {
   const { page, frame } = await pageFixture()
   try {
     await frame.evaluate(async () => {
@@ -229,19 +245,22 @@ test('guide and validation messages follow the bundled capabilities rather than 
       __test.overview.firmware.validation.fullMatrixComplete=true
       await __test.open('guide')
     })
-    assert.match(await frame.locator('main').innerText(), /插件是可选的管理入口/)
-    assert.match(await frame.locator('main').innerText(), /首页选择并保存 Studio模型／原生CLI/)
-    assert.match(await frame.locator('main').innerText(), /首页短按回原厂，长按说话/)
+    assert.match(await frame.locator('.adv-content').innerText(), /完成一次绑定/)
+    assert.match(await frame.locator('.adv-content').innerText(), /首页选择并保存 Studio模型／原生CLI/)
+    assert.match(await frame.locator('.adv-content').innerText(), /首页短按回原厂，长按说话/)
     await frame.evaluate(() => __test.open('firmware'))
-    assert.match(await frame.locator('main').innerText(), /synthetic-future-release/)
-    assert.doesNotMatch(await frame.locator('main').innerText(), /此 SDK 宿主版本尚未完成|16 Agent 尚未逐一|完整恢复与异常测试矩阵尚未完成/)
+    await frame.locator('details.adv-advanced summary').evaluate(node => node.scrollIntoView({ block: 'center' }))
+    await frame.locator('details.adv-advanced summary').click()
+    await frame.waitForFunction(() => document.querySelector('details.adv-advanced')?.open === true)
+    assert.match(await frame.locator('.adv-content').innerText(), /synthetic-future-release/)
+    assert.doesNotMatch(await frame.locator('.adv-content').innerText(), /此 SDK 宿主版本尚未完成|16 Agent 尚未逐一|完整恢复与异常测试矩阵尚未完成/)
     await frame.evaluate(async () => {
       delete __test.overview.capabilities.explicitAgentModes
       delete __test.overview.capabilities.shortG0Returns
       await __test.open('guide')
     })
-    assert.doesNotMatch(await frame.locator('main').innerText(), /首页选择并保存 Studio模型／原生CLI|首页短按回原厂/)
-    assert.match(await frame.locator('main').innerText(), /切换历史浏览/)
+    assert.doesNotMatch(await frame.locator('.adv-content').innerText(), /首页选择并保存 Studio模型／原生CLI|首页短按回原厂/)
+    assert.match(await frame.locator('.adv-content').innerText(), /切换历史浏览/)
   } finally { await page.close() }
 })
 
@@ -249,13 +268,13 @@ test('empty list, load failure and retry are visible; disposal ignores late RPC 
   const { page, frame } = await pageFixture()
   try {
     await frame.evaluate(async () => { __test.listing.devices=[]; await __test.open('devices') })
-    assert.equal(await frame.getByText('还没有登记设备', { exact: true }).isVisible(), true)
+    assert.equal(await frame.getByText('还没有连接设备', { exact: true }).isVisible(), true)
     await screenshot(page, 'devices-empty-fixture-sandbox.png')
     await frame.evaluate(async () => { __test.failures['list-devices']='Fixture host offline'; await __test.open('devices') })
     assert.match(await frame.getByRole('alert').innerText(), /Fixture host offline/)
     await frame.evaluate(() => delete __test.failures['list-devices'])
     await frame.getByRole('button', { name: '重试', exact: true }).click()
-    await frame.getByText('还没有登记设备', { exact: true }).waitFor()
+    await frame.getByText('还没有连接设备', { exact: true }).waitFor()
     await frame.evaluate(() => { __test.holds.push('get-settings'); window.__pendingMount=__test.open('preferences') })
     await frame.getByText('正在读取 Studio…', { exact: true }).waitFor()
     await frame.evaluate(() => __test.abort())
@@ -273,7 +292,7 @@ test('empty list, load failure and retry are visible; disposal ignores late RPC 
     await frame.waitForFunction(() => document.getElementById('root').childElementCount === 0)
     assert.equal(await frame.locator('#root').innerHTML(), '')
     await frame.evaluate(() => __test.open('devices'))
-    assert.equal(await frame.getByText('还没有登记设备', { exact: true }).isVisible(), true)
+    assert.equal(await frame.getByText('还没有连接设备', { exact: true }).isVisible(), true)
     assert.deepEqual(consoles, [])
   } finally { await page.close() }
 })
@@ -293,8 +312,10 @@ test('USB uses explicit scan, server-side wording and SDK confirmation; rejectin
     await frame.evaluate(() => __test.open('firmware'))
     const initial = await frame.evaluate(() => __test.calls.filter(call => call.name.startsWith('usb-')))
     assert.deepEqual(initial, [{ name: 'usb-info', input: null }])
-    assert.match(await frame.locator('.adv-usb').innerText(), /数据线须插到运行 Studio 服务端/)
-    assert.match(await frame.locator('.adv-usb').innerText(), /NAS／远程网页/)
+    assert.equal(await frame.getByRole('button', { name: '刷新任务状态', exact: true }).count(), 0)
+    assert.equal(await frame.getByRole('button', { name: '取消任务', exact: true }).count(), 0)
+    assert.match(await frame.locator('.adv-usb').innerText(), /数据线接到运行 Studio 的电脑/)
+    assert.match(await frame.locator('.adv-usb').innerText(), /使用 NAS 版 Studio/)
     const start = frame.locator('.adv-usb .adv-primary')
     assert.equal(await start.isDisabled(), true)
     await prepareUsb(frame)
@@ -303,14 +324,22 @@ test('USB uses explicit scan, server-side wording and SDK confirmation; rejectin
     await start.click()
     await frame.waitForFunction(() => __test.confirmations.length === 1)
     const confirmation = await frame.evaluate(() => __test.confirmations[0])
-    assert.match(confirmation, /SHA-256: [a-f0-9]{64}/)
-    assert.match(confirmation, /0x10000/)
+    assert.match(confirmation, /版本: v[0-9]/)
+    assert.doesNotMatch(confirmation, /SHA-256: [a-f0-9]{64}/)
+    assert.match(confirmation, /仅更新 Ekko 应用，原厂工具和设备设置会保留/)
     assert.match(confirmation, /中断不会自动回滚/)
     assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-start-update').length), 0)
     assert.equal(await start.isEnabled(), true)
     await page.setViewportSize({ width: 360, height: 780 })
     assert.equal(await frame.evaluate(() => document.documentElement.scrollWidth > innerWidth), false)
     await screenshot(page, 'usb-confirmation-fixture-sandbox.png')
+    const beforeRetry = await frame.evaluate(() => __test.calls.length)
+    await frame.evaluate(() => { __test.failures['usb-info']='Fixture USB capability unavailable';return __test.open('firmware') })
+    assert.equal(await frame.getByRole('button', { name: '重试', exact: true }).isVisible(), true)
+    await frame.evaluate(() => delete __test.failures['usb-info'])
+    await frame.getByRole('button', { name: '重试', exact: true }).click()
+    await frame.waitForFunction(() => !Array.from(document.querySelectorAll('.adv-usb button')).some(node => node.textContent==='重试' && !node.hidden))
+    assert.equal(await frame.evaluate(index => __test.calls.slice(index).some(call => ['usb-start-update','usb-list-ports'].includes(call.name)), beforeRetry), false)
   } finally { await page.close() }
 })
 
@@ -341,7 +370,7 @@ test('USB prevents duplicate submission and restores the submitted update after 
     assert.match(await frame.locator('.adv-usb').innerText(), /正在写入 · 45%/)
     assert.equal(await frame.locator('.adv-usb .adv-primary').isDisabled(), true)
     assert.equal(await frame.getByRole('button', { name: '扫描 USB 设备', exact: true }).isDisabled(), true)
-    assert.equal(await frame.getByRole('button', { name: '取消任务', exact: true }).isDisabled(), true)
+    assert.equal(await frame.getByRole('button', { name: '取消任务', exact: true, includeHidden: true }).isHidden(), true)
     assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-start-update').length), 1)
     assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-cancel-update').length), 0)
   } finally { await page.close() }
@@ -383,8 +412,8 @@ test('USB polling stops after disposal and reports verified completion without c
     await frame.evaluate(() => { __test.usbInfo.currentJob={...__test.usbJob,phase:'verifying',canCancel:false,progress:90}; return __test.open('firmware','en-US') })
     await frame.evaluate(() => { __test.usbInfo.currentJob={...__test.usbJob,phase:'completed',canCancel:false,progress:100,backupSaved:true,applicationVerified:true,preservedRegionsVerified:true,resetConfirmed:true} })
     await page.clock.runFor(2100)
-    await frame.getByText('Application and preserved-region verification passed.', { exact: true }).waitFor()
-    assert.match(await frame.locator('.adv-usb').innerText(), /Startup, chat, and voice still need to be checked on the device/)
+    await frame.getByText('Firmware updated. Factory tools and settings were preserved.', { exact: true }).waitFor()
+    assert.match(await frame.locator('.adv-usb').innerText(), /Select EkkoStudio in the M5 factory menu/)
     const count = await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-update-status').length)
     await page.clock.runFor(5000)
     assert.equal(await frame.evaluate(() => __test.calls.filter(call => call.name==='usb-update-status').length), count)
@@ -397,7 +426,7 @@ test('USB unknown-result recovery only rescans after explicit review and still n
     await frame.evaluate(() => { __test.usbInfo.currentJob={...__test.usbJob,phase:'failed',resultUnknown:true,backupSaved:true,errorCode:'USB_VERIFY_FAILED'}; return __test.open('firmware') })
     await frame.locator('.adv-usb').evaluate(node => node.scrollIntoView({ block: 'start' }))
     assert.equal(await frame.locator('.adv-usb .adv-primary').isDisabled(), true)
-    assert.match(await frame.locator('.adv-usb').innerText(), /约 30 分钟/)
+    assert.match(await frame.locator('.adv-usb').innerText(), /慢速连接耗时更长/)
     const recheck = frame.getByRole('button', { name: '重新核对并扫描', exact: true })
     await frame.evaluate(() => { __test.confirmResult=false })
     await recheck.click()
@@ -423,5 +452,42 @@ test('USB unknown-result recovery only rescans after explicit review and still n
     assert.match(await frame.locator('.adv-usb').innerText(), /Scan results are valid for two minutes/)
     assert.match(await frame.evaluate(() => __test.confirmations.at(-1)), /not bypassed/)
     assert.deepEqual(consoles, [])
+  } finally { await page.close() }
+})
+
+
+test('host product image loads under the real iframe CSP and falls back without requesting arbitrary URLs', async () => {
+  const { page, frame } = await pageFixture()
+  try {
+    const image = frame.getByRole('img', { name: 'M5Stack Cardputer-Adv', exact: true })
+    await image.waitFor({ state: 'visible' })
+    await frame.waitForFunction(() => document.querySelector('.adv-product-image')?.naturalWidth > 0)
+    assert.equal(await image.evaluate(node => node.src.startsWith('data:image/webp;base64,')), true)
+    for (const icon of ['https://example.invalid/icon.png', '/assets/icon.png', 'data:image/svg+xml;base64,PHN2Zy8+']) {
+      await frame.evaluate(icon => { __test.icon=icon;return __test.open('devices') }, icon)
+      assert.equal(await frame.locator('.adv-product-image').count(), 0)
+      assert.equal(await frame.getByRole('heading', { name: 'M5Stack Cardputer-Adv', exact: true }).isVisible(), true)
+    }
+    await frame.evaluate(() => { __test.icon='data:image/png;base64,AAAA';return __test.open('devices') })
+    await frame.waitForFunction(() => !document.querySelector('.adv-product-image'))
+    assert.equal(await frame.getByRole('heading', { name: 'M5Stack Cardputer-Adv', exact: true }).isVisible(), true)
+  } finally { await page.close() }
+})
+
+
+test('USB failure explains the actual problem while diagnostic codes remain behind the disclosure', async () => {
+  const { page, frame } = await pageFixture()
+  try {
+    await frame.evaluate(() => {
+      __test.usbInfo.currentJob={...__test.usbJob,phase:'failed',canCancel:false,message:'私有备份未能保存，没有写入应用。',errorCode:'FUTURE_USB_ERROR'}
+      return __test.open('firmware')
+    })
+    assert.match(await frame.locator('.adv-usb').innerText(), /私有备份未能保存，没有写入应用/)
+    assert.doesNotMatch(await frame.locator('.adv-content').innerText(), /FUTURE_USB_ERROR|fixture-server/)
+    const summary=frame.locator('details.adv-advanced summary')
+    await summary.evaluate(node => node.scrollIntoView({block:'center'}))
+    await summary.click()
+    await frame.waitForFunction(() => document.querySelector('details.adv-advanced')?.open === true)
+    assert.match(await frame.locator('details.adv-advanced').innerText(), /FUTURE_USB_ERROR/)
   } finally { await page.close() }
 })

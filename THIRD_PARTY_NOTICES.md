@@ -12,3 +12,5 @@
 
 
 USB升级驱动参考同作者thursdaycapital的StackChan插件提交feb63b0c2e13e2a37327b454c3f6f1a8e458345a的Node串口适配与作业设计。该原提交标为UNLICENSED，公开不等于开放复用许可；本次按作者用户指令适配为Cardputer的8MiB应用更新、私人备份和保留区域核对，不把原StackChan项目整体重新许可，不包含其CoreS3镜像或Pulse配对。新增依赖@serialport/bindings-cpp 13.0.1与@serialport/stream 13.0.0遵循MIT，esptool-js 0.7.1遵循Apache-2.0；安装依赖时保留各包LICENSE及原声明。
+
+插件头像与主导航的产品图片由用户提供，仅作标准尺寸和格式适配；来源与摘要见[图标说明](assets/README.md)。产品图、商标和品牌名称归原权利人，代码许可不自动替代素材权利。

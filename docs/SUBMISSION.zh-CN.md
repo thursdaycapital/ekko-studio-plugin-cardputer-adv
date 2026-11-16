@@ -1,11 +1,11 @@
 # 提交 Ekko Studio 插件
 
-当前准备的是本地 `0.3.0-alpha.1` USB更新候选，捆绑alpha6固件不变，不把旧版测试当作新USB实际烧录证据。alpha6固件Release仍为草稿；本版验证以[检查记录](VALIDATION.zh-CN.md)为准。尚未提交本版云端目录审核或发布npm。
+当前准备的是本地 `0.3.0-alpha.2` USB更新候选，捆绑alpha6固件不变，不把旧版测试当作新USB实际烧录证据。alpha6固件Release仍为草稿；本版验证以[检查记录](VALIDATION.zh-CN.md)为准。尚未提交本版云端目录审核或发布npm。
 
 ## 固定材料
 
 - 插件独立仓库：[thursdaycapital/ekko-studio-plugin-cardputer-adv](https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv)。发布时仓库根须包含`plugin.json`、成品入口及全部捆绑材料；不使用裸固件仓库或`/tree/...`子页面作为安装源。
-- `plugin.json`与`package.json`版本统一为`0.3.0-alpha.1`，使用官方SDK v1、`ui`／`api.read`／`api.write`及当前调用者／Profile作用域。新增服务端USB应用更新，不注册模型烧录工具、HTTP服务或聊天桥接；原生依赖与用户确认范围必须明确。
+- `plugin.json`与`package.json`版本统一为`0.3.0-alpha.2`，使用官方SDK v1、`ui`／`api.read`／`api.write`及当前调用者／Profile作用域。新增服务端USB应用更新，不注册模型烧录工具、HTTP服务或聊天桥接；原生依赖与用户确认范围必须明确。
 - 应用`cardputer-adv-v10.0.0-alpha.6`：3,321,072B、SHA `9208e53b8336523b50a3d49ce5a18f559f9aa79a885bef6df2deaf201c930230`；对应源码快照`a78fc66b7b57b06cd1de8dd990d633d0b497fda7`。
 - 应用只用[固定公开提交 raw 文件](https://raw.githubusercontent.com/thursdaycapital/ekko-cardputer-adv-stock-lan/a78fc66b7b57b06cd1de8dd990d633d0b497fda7/firmware/ekko-cardputer-next-0x10000.bin)；alpha6草稿Release不列为公共下载。
 - 对应`firmware/source.tar.gz`：10,104,056B、SHA `dedf8d3dfb27b5c55ecfb2f8bdda018dbae2ae5e5f670fa7de810d08f81d72e0`，随插件包提供，无独立公开下载。清单不得伪造Draft源码URL。

@@ -1,6 +1,6 @@
 # 安装插件、更新已有固件与首次绑定
 
-当前本地候选为插件 `0.3.0-alpha.1` / 固件 `cardputer-adv-v10.0.0-alpha.6`。应用 3,321,072 B、SHA `9208e53b8336523b50a3d49ce5a18f559f9aa79a885bef6df2deaf201c930230`，源码随包归档 10,104,056 B、SHA `dedf8d3dfb27b5c55ecfb2f8bdda018dbae2ae5e5f670fa7de810d08f81d72e0`。应用外链固定到公开提交 `a78fc66b7b57b06cd1de8dd990d633d0b497fda7`；alpha6 Release 仍为草稿，不提供其公共下载或伪造源码下载。本版新增USB更新作业，验证以[检查记录](VALIDATION.zh-CN.md)为准；旧插件验证不代表新USB写入或实体矩阵通过。
+当前本地候选为插件 `0.3.0-alpha.2` / 固件 `cardputer-adv-v10.0.0-alpha.6`。应用 3,321,072 B、SHA `9208e53b8336523b50a3d49ce5a18f559f9aa79a885bef6df2deaf201c930230`，源码随包归档 10,104,056 B、SHA `dedf8d3dfb27b5c55ecfb2f8bdda018dbae2ae5e5f670fa7de810d08f81d72e0`。应用外链固定到公开提交 `a78fc66b7b57b06cd1de8dd990d633d0b497fda7`；alpha6 Release 仍为草稿，不提供其公共下载或伪造源码下载。本版新增USB更新作业，验证以[检查记录](VALIDATION.zh-CN.md)为准；旧插件验证不代表新USB写入或实体矩阵通过。
 
 普通使用先看[三步教程](QUICKSTART.zh-CN.md)。插件为可选管理入口，设备直连与聊天不依赖安装它。已有兼容布局可用[USB更新界面](USB_UPDATE.zh-CN.md)，以下命令保留作人工更新与校验参考。
 

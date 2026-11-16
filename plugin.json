@@ -1,7 +1,7 @@
 {
   "id": "m5stack-cardputer-adv",
   "name": "M5Stack Cardputer-Adv",
-  "description": "M5Stack Cardputer-Adv 原生设备管理与USB应用升级：写前私有备份、核对既有双固件布局，仅更新Ekko应用并读回校验。保留原厂与设置，不修改Studio核心。",
+  "description": "管理 M5Stack Cardputer-Adv，查看连接状态、升级配套固件，并了解打字与语音使用方法。",
   "author": {
     "name": "thursdaycapital",
     "url": "https://github.com/thursdaycapital"
@@ -15,7 +15,7 @@
     "lan",
     "firmware"
   ],
-  "version": "0.3.0-alpha.1",
+  "version": "0.3.0-alpha.2",
   "apiVersion": 1,
   "server": "server.mjs",
   "client": "client.mjs",
@@ -56,7 +56,7 @@
     "main": [
       {
         "viewId": "devices",
-        "icon": "mcp",
+        "icon": "assets/cardputer-adv.webp",
         "title": "Cardputer-Adv"
       }
     ],
@@ -70,5 +70,6 @@
   "repository": "https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv",
   "documentation": "https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv/blob/main/docs/QUICKSTART.zh-CN.md",
   "issues": "https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv/issues",
-  "changelog": "https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv/blob/main/CHANGELOG.md"
+  "changelog": "https://github.com/thursdaycapital/ekko-studio-plugin-cardputer-adv/blob/main/CHANGELOG.md",
+  "icon": "assets/cardputer-adv.webp"
 }

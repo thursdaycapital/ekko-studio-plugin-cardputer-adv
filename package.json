@@ -1,9 +1,9 @@
 {
   "name": "studio-plugin-m5stack-cardputer-adv",
-  "version": "0.3.0-alpha.1",
+  "version": "0.3.0-alpha.2",
   "type": "module",
   "private": true,
-  "description": "Ekko Studio SDK v1 plugin and firmware update preview for M5Stack Cardputer-Adv",
+  "description": "Ekko Studio companion plugin and USB firmware updater for M5Stack Cardputer-Adv",
   "license": "BSL-1.1",
   "author": "thursdaycapital",
   "engines": {
@@ -30,7 +30,8 @@
     "firmware/*.json",
     "firmware/*.md",
     "firmware/*.txt",
-    "firmware/*.tar.gz"
+    "firmware/*.tar.gz",
+    "assets/"
   ],
   "scripts": {
     "dev": "ekko-studio plugins dev .",

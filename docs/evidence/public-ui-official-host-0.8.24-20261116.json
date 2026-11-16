@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-16",
+  "pluginVersion": "0.3.0-alpha.2",
+  "studioVersion": "0.8.24",
+  "pluginEnabled": true,
+  "pluginStatus": "active",
+  "settingsPreserved": true,
+  "configPreserved": true,
+  "clientMatchesSource": true,
+  "clientSha256": "73ea369b58b1c83c14a6ecd8219fb9a8d8fe01447d84bd836471c61d4d68ecc6",
+  "icon": {
+    "asset": "assets/cardputer-adv.webp",
+    "bytes": 130292,
+    "sha256": "c017d40ffecbf80bdb08603a9b03585925a5978bc8d049de9bb600e4b9881771",
+    "dimensions": [
+      512,
+      512
+    ],
+    "underOfficialLimit": true,
+    "manifestNormalizedToDataUrl": true,
+    "normalizedBytesMatch": true,
+    "mainNavigationUsesSameIcon": true,
+    "pluginCenterImageLoaded": true,
+    "iframeImageLoaded": true
+  },
+  "checks": {
+    "unitPassed": 108,
+    "unitFailed": 0,
+    "unitSkipped": 0,
+    "chromeSandboxPassed": 12,
+    "harnessPassed": true
+  },
+  "realBrowser": {
+    "deviceHeadings": [
+      "设备名称",
+      "设备码末六位",
+      "局域网"
+    ],
+    "imageLoaded": true,
+    "views": [
+      {
+        "view": "/guide",
+        "loaded": true
+      },
+      {
+        "view": "/preferences",
+        "loaded": true
+      },
+      {
+        "view": "/firmware",
+        "loaded": true
+      }
+    ],
+    "startRequests": 0,
+    "automaticScans": 0,
+    "noDefaultDeveloperText": true,
+    "advancedClosed": true,
+    "idleProgressHidden": true,
+    "advancedChecksumAvailable": true,
+    "explicitScanCount": 1,
+    "simpleConfirmKeepsBackupWarning": true,
+    "confirmWithoutShaOrAddress": true,
+    "confirmationCancelled": true,
+    "pluginCenterIconLoaded": true
+  },
+  "officialCoreUnchanged": true,
+  "firmware": {
+    "version": "cardputer-adv-v10.0.0-alpha.6",
+    "sha256": "9208e53b8336523b50a3d49ce5a18f559f9aa79a885bef6df2deaf201c930230",
+    "changed": false,
+    "reflashed": false
+  },
+  "notes": [
+    "Presentation-only update. No new firmware or hardware acceptance claimed.",
+    "Development details remain in docs; advanced source, checksum and diagnostic information stays available on demand.",
+    "Settings/workspace icon constraints remain official; no Studio or SDK patch.",
+    "All raw captures and operator authentication remain private."
+  ]
+}
